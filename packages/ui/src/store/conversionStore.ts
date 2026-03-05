@@ -25,8 +25,11 @@ export interface ConversionStore {
   progress: number;
   currentStage: string | null;
   downloadUrl: string | null;
+  outputSizeBytes: number | null;
   error: ConversionError | null;
   slideSize: SlideSize;
+  sourceHtml: string | null;
+  comparisonMode: boolean;
 
   setFiles: (files: Map<string, Blob>) => void;
   addSlidePreview: (preview: string, index: number) => void;
@@ -36,8 +39,11 @@ export interface ConversionStore {
   setProgress: (progress: number) => void;
   setStage: (stage: string | null) => void;
   setDownloadUrl: (url: string | null) => void;
+  setOutputSizeBytes: (sizeBytes: number | null) => void;
   setError: (error: ConversionError | null) => void;
   setSlideSize: (size: SlideSize) => void;
+  setSourceHtml: (html: string | null) => void;
+  setComparisonMode: (enabled: boolean) => void;
   reset: () => void;
 }
 
@@ -50,8 +56,11 @@ const initialState = {
   progress: 0,
   currentStage: null as string | null,
   downloadUrl: null as string | null,
+  outputSizeBytes: null as number | null,
   error: null as ConversionError | null,
   slideSize: { width: 1920, height: 1080 },
+  sourceHtml: null as string | null,
+  comparisonMode: false,
 };
 
 export const useConversionStore = create<ConversionStore>((set) => ({
@@ -78,9 +87,15 @@ export const useConversionStore = create<ConversionStore>((set) => ({
 
   setDownloadUrl: (url) => set({ downloadUrl: url }),
 
+  setOutputSizeBytes: (sizeBytes) => set({ outputSizeBytes: sizeBytes }),
+
   setError: (error) => set({ error }),
 
   setSlideSize: (size) => set({ slideSize: size }),
+
+  setSourceHtml: (html) => set({ sourceHtml: html }),
+
+  setComparisonMode: (enabled) => set({ comparisonMode: enabled }),
 
   reset: () =>
     set({
@@ -89,5 +104,7 @@ export const useConversionStore = create<ConversionStore>((set) => ({
       slides: [],
       mappedSlides: [],
       selectedSlideIndex: null,
+      sourceHtml: null,
+      comparisonMode: false,
     }),
 }));

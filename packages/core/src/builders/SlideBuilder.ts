@@ -72,6 +72,7 @@ export interface SlideShape {
   border?: ShapeBorder;
   shadow?: ShapeShadow;
   textRuns?: TextRun[];
+  textAlign?: 'left' | 'center' | 'right' | 'justify';
   imageRId?: string; // relationship ID for image shapes
 }
 
@@ -191,15 +192,35 @@ function buildRunPropertiesXml(run: TextRun): string {
 }
 
 /**
+ * Map CSS text-align to OOXML paragraph alignment attribute value.
+ */
+function cssAlignToOoxml(align: string | undefined): string | undefined {
+  switch (align) {
+    case 'center':  return 'ctr';
+    case 'right':   return 'r';
+    case 'justify': return 'just';
+    case 'left':    return 'l';
+    default:        return undefined;
+  }
+}
+
+/**
  * Build the `<p:txBody>` for a shape containing text runs.
  */
-function buildTextBodyXml(textRuns: TextRun[]): string {
+function buildTextBodyXml(textRuns: TextRun[], textAlign?: string): string {
+  const algnVal = cssAlignToOoxml(textAlign);
+  const pPr = algnVal ? `    <a:pPr algn="${algnVal}"/>` : null;
+
   const parts: string[] = [
     '<p:txBody>',
     '  <a:bodyPr wrap="square" rtlCol="0"/>',
     '  <a:lstStyle/>',
     '  <a:p>',
   ];
+
+  if (pPr) {
+    parts.push(pPr);
+  }
 
   for (const run of textRuns) {
     parts.push(
@@ -257,7 +278,7 @@ function buildShapeXml(shape: SlideShape): string {
 
   // Text body
   if (shape.textRuns && shape.textRuns.length > 0) {
-    parts.push(`  ${buildTextBodyXml(shape.textRuns)}`);
+    parts.push(`  ${buildTextBodyXml(shape.textRuns, shape.textAlign)}`);
   } else {
     // Empty text body required by OOXML for shape elements
     parts.push('  <p:txBody>');

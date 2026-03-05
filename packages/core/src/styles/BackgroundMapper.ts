@@ -23,7 +23,8 @@ export function mapBackground(
   const warnings: ConversionWarning[] = [];
 
   const bgColor = computed['background-color'] || '';
-  const bgImage = computed['background-image'] || computed['background'] || '';
+  const bgShorthand = computed['background'] || '';
+  const bgImage = computed['background-image'] || bgShorthand;
 
   // Check for background-image first (Tier C for url(), handled elsewhere for gradients)
   if (bgImage && bgImage !== 'none' && bgImage !== 'initial') {
@@ -45,8 +46,22 @@ export function mapBackground(
     }
   }
 
+  // Determine the effective color source: prefer background-color, fall back to
+  // the background shorthand when it contains a plain color (not gradient/url).
+  let effectiveColor = bgColor;
+  if (isTransparent(effectiveColor) && bgShorthand) {
+    const trimmed = bgShorthand.trim();
+    if (
+      !trimmed.includes('gradient') &&
+      !trimmed.includes('url(') &&
+      !isTransparent(trimmed)
+    ) {
+      effectiveColor = trimmed;
+    }
+  }
+
   // Handle transparent / none
-  if (isTransparent(bgColor)) {
+  if (isTransparent(effectiveColor)) {
     return {
       fill: { type: 'none' },
       warnings,
@@ -54,9 +69,9 @@ export function mapBackground(
   }
 
   // Handle solid color
-  if (bgColor && bgColor.trim().length > 0) {
-    const color = normalizeColor(bgColor);
-    const alpha = extractAlpha(bgColor);
+  if (effectiveColor && effectiveColor.trim().length > 0) {
+    const color = normalizeColor(effectiveColor);
+    const alpha = extractAlpha(effectiveColor);
 
     // If alpha is 0, treat as none
     if (alpha === 0) {

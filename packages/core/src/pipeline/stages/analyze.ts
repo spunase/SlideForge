@@ -12,10 +12,18 @@ export interface AnalyzeResult {
 
 function hasVisualContainerStyles(computedStyles: Record<string, string>): boolean {
   const backgroundColor = computedStyles['background-color'] ?? '';
+  const backgroundShorthand = computedStyles['background'] ?? '';
+
+  const isNonTransparent = (v: string) =>
+    v.length > 0 &&
+    v !== 'transparent' &&
+    v !== 'rgba(0, 0, 0, 0)' &&
+    v !== 'none' &&
+    v !== 'initial' &&
+    v !== 'inherit';
+
   const hasBackground =
-    backgroundColor.length > 0 &&
-    backgroundColor !== 'transparent' &&
-    backgroundColor !== 'rgba(0, 0, 0, 0)';
+    isNonTransparent(backgroundColor) || isNonTransparent(backgroundShorthand);
 
   const backgroundImage = computedStyles['background-image'] ?? '';
   const hasBackgroundImage =
@@ -64,6 +72,43 @@ function flattenElements(elements: ExtractedElement[]): ExtractedElement[] {
 }
 
 /**
+ * Scale shapes to fill the slide when the HTML content is smaller than the
+ * target slide dimensions.  Computes the bounding box of all shapes and
+ * applies independent x/y scaling so the content stretches to cover the slide.
+ *
+ * Skips scaling when content already covers ≥ 95 % of the slide on both axes.
+ */
+function scaleToFitSlide(
+  shapes: MappedShape[],
+  slideWidth: number,
+  slideHeight: number,
+): void {
+  if (shapes.length === 0) return;
+
+  let maxRight = 0;
+  let maxBottom = 0;
+  for (const s of shapes) {
+    maxRight = Math.max(maxRight, s.geometry.x + s.geometry.width);
+    maxBottom = Math.max(maxBottom, s.geometry.y + s.geometry.height);
+  }
+
+  if (maxRight <= 0 || maxBottom <= 0) return;
+
+  const ratioX = slideWidth / maxRight;
+  const ratioY = slideHeight / maxBottom;
+
+  // Skip if content already covers ≥ 95 % of the slide on both axes
+  if (ratioX <= 1.05 && ratioY <= 1.05) return;
+
+  for (const s of shapes) {
+    s.geometry.x = s.geometry.x * ratioX;
+    s.geometry.y = s.geometry.y * ratioY;
+    s.geometry.width = s.geometry.width * ratioX;
+    s.geometry.height = s.geometry.height * ratioY;
+  }
+}
+
+/**
  * Analyze extracted elements by mapping them through the style pipeline.
  *
  * @param extractedSlides - Arrays of ExtractedElement per slide
@@ -88,6 +133,9 @@ export function analyze(
       allWarnings.push(...shape.warnings);
       mappedShapes.push(shape);
     }
+
+    // Scale content to fill the slide when HTML is smaller than target dimensions
+    scaleToFitSlide(mappedShapes, slideWidth, slideHeight);
 
     slides.push(mappedShapes);
   }

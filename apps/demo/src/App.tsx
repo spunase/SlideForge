@@ -73,7 +73,7 @@ export function App() {
             {isIdle && <DropZone />}
 
             {/* Options bar visible once files are loaded */}
-            {hasFiles && !isError && (
+            {hasFiles && !isError && !isDone && (
               <OptionsBar onGenerate={startConversion} />
             )}
 

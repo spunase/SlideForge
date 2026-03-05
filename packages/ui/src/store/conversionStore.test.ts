@@ -37,6 +37,11 @@ describe('conversionStore', () => {
       expect(state.downloadUrl).toBeNull();
     });
 
+    it('should start with null outputSizeBytes', () => {
+      const state = useConversionStore.getState();
+      expect(state.outputSizeBytes).toBeNull();
+    });
+
     it('should start with null error', () => {
       const state = useConversionStore.getState();
       expect(state.error).toBeNull();
@@ -143,6 +148,19 @@ describe('conversionStore', () => {
     });
   });
 
+  describe('setOutputSizeBytes', () => {
+    it('should set output size in bytes', () => {
+      useConversionStore.getState().setOutputSizeBytes(1048576);
+      expect(useConversionStore.getState().outputSizeBytes).toBe(1048576);
+    });
+
+    it('should clear output size with null', () => {
+      useConversionStore.getState().setOutputSizeBytes(2560);
+      useConversionStore.getState().setOutputSizeBytes(null);
+      expect(useConversionStore.getState().outputSizeBytes).toBeNull();
+    });
+  });
+
   describe('setError', () => {
     it('should set error', () => {
       useConversionStore.getState().setError({ code: 'E001', message: 'Something went wrong' });
@@ -164,6 +182,36 @@ describe('conversionStore', () => {
     });
   });
 
+  describe('setSourceHtml', () => {
+    it('should store the original HTML string', () => {
+      useConversionStore.getState().setSourceHtml('<h1>Hello</h1>');
+      expect(useConversionStore.getState().sourceHtml).toBe('<h1>Hello</h1>');
+    });
+
+    it('should clear with null', () => {
+      useConversionStore.getState().setSourceHtml('<p>test</p>');
+      useConversionStore.getState().setSourceHtml(null);
+      expect(useConversionStore.getState().sourceHtml).toBeNull();
+    });
+  });
+
+  describe('setComparisonMode', () => {
+    it('should start as false', () => {
+      expect(useConversionStore.getState().comparisonMode).toBe(false);
+    });
+
+    it('should toggle comparison mode on', () => {
+      useConversionStore.getState().setComparisonMode(true);
+      expect(useConversionStore.getState().comparisonMode).toBe(true);
+    });
+
+    it('should toggle comparison mode off', () => {
+      useConversionStore.getState().setComparisonMode(true);
+      useConversionStore.getState().setComparisonMode(false);
+      expect(useConversionStore.getState().comparisonMode).toBe(false);
+    });
+  });
+
   describe('reset', () => {
     it('should reset all state to initial values', () => {
       const store = useConversionStore.getState();
@@ -171,8 +219,11 @@ describe('conversionStore', () => {
       store.setProgress(75);
       store.setStage('build');
       store.setDownloadUrl('blob:test');
+      store.setOutputSizeBytes(5000);
       store.setError({ code: 'E001', message: 'Error' });
       store.setSlideSize({ width: 1280, height: 720 });
+      store.setSourceHtml('<h1>Test</h1>');
+      store.setComparisonMode(true);
 
       store.reset();
 
@@ -181,10 +232,13 @@ describe('conversionStore', () => {
       expect(state.progress).toBe(0);
       expect(state.currentStage).toBeNull();
       expect(state.downloadUrl).toBeNull();
+      expect(state.outputSizeBytes).toBeNull();
       expect(state.error).toBeNull();
       expect(state.slideSize).toEqual({ width: 1920, height: 1080 });
       expect(state.files.size).toBe(0);
       expect(state.slides).toHaveLength(0);
+      expect(state.sourceHtml).toBeNull();
+      expect(state.comparisonMode).toBe(false);
     });
   });
 });

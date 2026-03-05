@@ -87,15 +87,15 @@ function buildAssetIndex(assets: Map<string, Blob>): Map<string, Blob> {
   return index;
 }
 
+function isRelativeHref(href: string): boolean {
+  return !href.startsWith('http://') && !href.startsWith('https://') && !href.startsWith('//');
+}
+
 async function inlineLinkedStylesheets(
   segment: string,
   assets: Map<string, Blob>,
 ): Promise<string> {
-  if (assets.size === 0) {
-    return segment;
-  }
-
-  const assetIndex = buildAssetIndex(assets);
+  const assetIndex = assets.size > 0 ? buildAssetIndex(assets) : new Map<string, Blob>();
   const parser = new DOMParser();
   const doc = parser.parseFromString(ensureFullHtml(segment), 'text/html');
 
@@ -106,16 +106,33 @@ async function inlineLinkedStylesheets(
       continue;
     }
 
+    // First try the uploaded assets map
     const asset = assetIndex.get(normalizeAssetKey(href));
-    if (!asset) {
+    if (asset) {
+      const cssText = await readAssetText(asset);
+      const styleEl = doc.createElement('style');
+      styleEl.setAttribute('data-inline-source', href);
+      styleEl.textContent = cssText;
+      link.replaceWith(styleEl);
       continue;
     }
 
-    const cssText = await readAssetText(asset);
-    const styleEl = doc.createElement('style');
-    styleEl.setAttribute('data-inline-source', href);
-    styleEl.textContent = cssText;
-    link.replaceWith(styleEl);
+    // For relative links not in assets, try fetching from the server
+    // (covers cases where the CSS wasn't uploaded alongside the HTML)
+    if (isRelativeHref(href) && isBrowserRuntime()) {
+      try {
+        const response = await fetch(href, { cache: 'no-store' });
+        if (response.ok) {
+          const cssText = await response.text();
+          const styleEl = doc.createElement('style');
+          styleEl.setAttribute('data-inline-source', href);
+          styleEl.textContent = cssText;
+          link.replaceWith(styleEl);
+        }
+      } catch {
+        // Silently skip — CSS will not be available
+      }
+    }
   }
 
   return `<!doctype html>\n${doc.documentElement.outerHTML}`;
@@ -151,6 +168,159 @@ async function readAssetText(asset: Blob): Promise<string> {
   return '';
 }
 
+// ---------------------------------------------------------------------------
+// CSS-to-inline resolver for jsdom/DOMParser mode
+// jsdom does not cascade <style> rules via getComputedStyle, so we manually
+// resolve CSS selectors + var() references and stamp them as inline styles.
+// ---------------------------------------------------------------------------
+
+interface ParsedCssRule {
+  selector: string;
+  properties: Map<string, string>;
+  specificity: number;
+}
+
+function computeSpecificity(selector: string): number {
+  // Simple specificity: count IDs (#), classes/attrs (.), and elements
+  const ids = (selector.match(/#[a-zA-Z][\w-]*/g) ?? []).length;
+  const classes = (selector.match(/\.[a-zA-Z][\w-]*/g) ?? []).length
+    + (selector.match(/\[[^\]]+\]/g) ?? []).length
+    + (selector.match(/:[a-zA-Z][\w-]*/g) ?? []).length;
+  const elements = (selector.match(/(^|[\s>+~])([a-zA-Z][\w-]*)/g) ?? []).length;
+  return ids * 100 + classes * 10 + elements;
+}
+
+function parseCssRules(cssText: string): { rules: ParsedCssRule[]; customProperties: Map<string, string> } {
+  const rules: ParsedCssRule[] = [];
+  const customProperties = new Map<string, string>();
+
+  // Strip comments
+  const cleaned = cssText.replace(/\/\*[\s\S]*?\*\//g, '');
+  // Strip @media and other at-rules (we take inner rules for simplicity)
+  const withoutAtRules = cleaned.replace(/@media[^{]*\{([\s\S]*?)\}\s*\}/g, '$1');
+
+  // Match rule blocks: selector { declarations }
+  const ruleRegex = /([^{}]+)\{([^{}]*)\}/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = ruleRegex.exec(withoutAtRules)) !== null) {
+    const selectorGroup = (match[1] ?? '').trim();
+    const declarations = (match[2] ?? '').trim();
+    if (!selectorGroup || !declarations) continue;
+
+    const properties = new Map<string, string>();
+    for (const decl of declarations.split(';')) {
+      const colonIdx = decl.indexOf(':');
+      if (colonIdx <= 0) continue;
+      const prop = decl.slice(0, colonIdx).trim().toLowerCase();
+      const val = decl.slice(colonIdx + 1).trim().replace(/\s*!important\s*$/, '');
+      if (prop && val) {
+        if (prop.startsWith('--')) {
+          customProperties.set(prop, val);
+        } else {
+          properties.set(prop, val);
+        }
+      }
+    }
+
+    if (properties.size === 0 && selectorGroup !== ':root') continue;
+
+    // Handle comma-separated selectors
+    for (const sel of selectorGroup.split(',')) {
+      const trimmed = sel.trim();
+      if (!trimmed || trimmed === ':root') continue;
+      rules.push({
+        selector: trimmed,
+        properties: new Map(properties),
+        specificity: computeSpecificity(trimmed),
+      });
+    }
+  }
+
+  // Sort by specificity (lower first, so higher specificity overwrites)
+  rules.sort((a, b) => a.specificity - b.specificity);
+
+  return { rules, customProperties };
+}
+
+function resolveVarReferences(value: string, customProperties: Map<string, string>, depth = 0): string {
+  if (depth > 10 || !value.includes('var(')) return value;
+
+  return value.replace(/var\(\s*(--[a-zA-Z0-9-]+)\s*(?:,\s*([^)]*))?\)/g, (_match, name: string, fallback?: string) => {
+    const resolved = customProperties.get(name);
+    if (resolved !== undefined) {
+      return resolveVarReferences(resolved, customProperties, depth + 1);
+    }
+    if (fallback !== undefined) {
+      return resolveVarReferences(fallback.trim(), customProperties, depth + 1);
+    }
+    return '';
+  });
+}
+
+function applyStylesToInline(doc: Document): void {
+  // Collect all <style> block text
+  const styleElements = doc.querySelectorAll('style');
+  let allCss = '';
+  for (const el of styleElements) {
+    allCss += (el.textContent ?? '') + '\n';
+  }
+  if (allCss.trim().length === 0) return;
+
+  const { rules, customProperties } = parseCssRules(allCss);
+
+  // Walk all elements and apply matching rules
+  const allElements = doc.body?.querySelectorAll('*');
+  if (!allElements) return;
+
+  for (const element of allElements) {
+    const matched = new Map<string, string>();
+
+    for (const rule of rules) {
+      try {
+        if (element.matches(rule.selector)) {
+          for (const [prop, val] of rule.properties) {
+            matched.set(prop, val);
+          }
+        }
+      } catch {
+        // Invalid selector — skip silently
+      }
+    }
+
+    if (matched.size === 0) continue;
+
+    // Resolve var() references and merge with existing inline styles
+    const existing = element.getAttribute('style') ?? '';
+    const newDeclarations: string[] = [];
+
+    // Parse existing inline styles to avoid overwriting them
+    const existingProps = new Set<string>();
+    for (const decl of existing.split(';')) {
+      const colonIdx = decl.indexOf(':');
+      if (colonIdx > 0) {
+        existingProps.add(decl.slice(0, colonIdx).trim().toLowerCase());
+      }
+    }
+
+    for (const [prop, rawVal] of matched) {
+      // Don't overwrite existing inline styles (they have higher specificity)
+      if (existingProps.has(prop)) continue;
+      const resolved = resolveVarReferences(rawVal, customProperties);
+      if (resolved && resolved.length > 0) {
+        newDeclarations.push(`${prop}: ${resolved}`);
+      }
+    }
+
+    if (newDeclarations.length > 0) {
+      const merged = existing
+        ? `${existing}; ${newDeclarations.join('; ')}`
+        : newDeclarations.join('; ');
+      element.setAttribute('style', merged);
+    }
+  }
+}
+
 async function parseSegmentsWithDomParser(
   segments: string[],
   assets: Map<string, Blob>,
@@ -162,6 +332,11 @@ async function parseSegmentsWithDomParser(
     const withInlineStyles = await inlineLinkedStylesheets(segment, assets);
     const html = ensureFullHtml(withInlineStyles);
     const doc = parser.parseFromString(html, 'text/html');
+
+    // In jsdom/DOMParser mode, cascade CSS rules into inline styles
+    // since jsdom's getComputedStyle doesn't resolve class-based rules
+    applyStylesToInline(doc);
+
     documents.push(doc);
   }
 
@@ -189,9 +364,31 @@ function createOffscreenFrame(
 
 function waitForLayout(frameWindow: Window): Promise<void> {
   return new Promise((resolve) => {
-    frameWindow.requestAnimationFrame(() => {
+    // Wait for stylesheets to load, then settle layout with rAF
+    const doc = frameWindow.document;
+    const pendingLinks = doc.querySelectorAll('link[rel="stylesheet"]');
+    const linkPromises: Promise<void>[] = [];
+
+    for (const link of pendingLinks) {
+      linkPromises.push(
+        new Promise<void>((res) => {
+          if ((link as HTMLLinkElement).sheet) {
+            res();
+            return;
+          }
+          link.addEventListener('load', () => res(), { once: true });
+          link.addEventListener('error', () => res(), { once: true });
+        }),
+      );
+    }
+
+    // Wait for all stylesheets (with a timeout), then settle with 2x rAF
+    const stylesheetTimeout = new Promise<void>((res) => setTimeout(res, 3000));
+    Promise.race([Promise.all(linkPromises), stylesheetTimeout]).then(() => {
       frameWindow.requestAnimationFrame(() => {
-        resolve();
+        frameWindow.requestAnimationFrame(() => {
+          resolve();
+        });
       });
     });
   });
@@ -235,4 +432,16 @@ async function renderSegmentsInIframes(
       }
     },
   };
+}
+
+/**
+ * Public API: inline external `<link rel="stylesheet">` tags into the HTML
+ * using the provided assets map. Useful for embedding CSS before displaying
+ * HTML in a sandboxed iframe (e.g., the comparison slider).
+ */
+export async function inlineCssIntoHtml(
+  html: string,
+  assets: Map<string, Blob>,
+): Promise<string> {
+  return inlineLinkedStylesheets(html, assets);
 }

@@ -208,39 +208,194 @@ function walkElementComputed(
   };
 }
 
+// ---------------------------------------------------------------------------
+// Layout context for fallback geometry estimation
+// ---------------------------------------------------------------------------
+
+interface LayoutSlot {
+  x: number;
+  y: number;
+  width: number;
+}
+
+function parsePxValue(style: string, property: string): number | undefined {
+  const re = new RegExp(`(?:^|;|\\s)${property}:\\s*(\\d+(?:\\.\\d+)?)px`, 'i');
+  const m = style.match(re);
+  return m?.[1] ? Number.parseFloat(m[1]) : undefined;
+}
+
+function parseStyleProp(style: string, property: string): string | undefined {
+  const re = new RegExp(`(?:^|;|\\s)${property}:\\s*([^;]+)`, 'i');
+  const m = style.match(re);
+  return m?.[1]?.trim();
+}
+
+/**
+ * Determine the layout direction for an element based on its inline styles.
+ * Returns 'row' for horizontal flex/grid, 'column' for vertical stacking.
+ */
+function getLayoutDirection(style: string): 'row' | 'column' {
+  const display = parseStyleProp(style, 'display');
+  if (!display) return 'column';
+
+  if (display === 'flex' || display === 'inline-flex') {
+    const direction = parseStyleProp(style, 'flex-direction');
+    return direction === 'column' ? 'column' : 'row';
+  }
+
+  if (display === 'grid' || display === 'inline-grid') {
+    const cols = parseStyleProp(style, 'grid-template-columns');
+    // Grid with column template → horizontal layout
+    if (cols && cols !== 'none') return 'row';
+  }
+
+  return 'column';
+}
+
+/**
+ * Parse grid-template-columns into fractional ratios.
+ * Handles: "2fr 1fr", "repeat(auto-fit, minmax(200px, 1fr))", "1fr 1fr 1fr"
+ */
+function parseGridColumns(template: string, childCount: number): number[] {
+  // Handle repeat(auto-fit, ...) → distribute evenly
+  if (template.includes('repeat') && template.includes('auto-fit')) {
+    return Array(childCount).fill(1);
+  }
+
+  // Parse "Nfr" tokens
+  const frValues: number[] = [];
+  const tokens = template.split(/\s+/);
+  for (const token of tokens) {
+    const frMatch = token.match(/^(\d+(?:\.\d+)?)fr$/);
+    if (frMatch?.[1]) {
+      frValues.push(Number.parseFloat(frMatch[1]));
+    } else {
+      frValues.push(1); // Non-fr values treated as equal share
+    }
+  }
+
+  return frValues.length > 0 ? frValues : Array(childCount).fill(1);
+}
+
+/**
+ * Compute layout slots for children based on parent layout.
+ */
+function computeChildSlots(
+  parentX: number,
+  parentY: number,
+  parentWidth: number,
+  childCount: number,
+  style: string,
+): LayoutSlot[] {
+  if (childCount === 0) return [];
+
+  const direction = getLayoutDirection(style);
+  const gap = parsePxValue(style, 'gap') ?? 0;
+  const padding = parsePxValue(style, 'padding') ?? 0;
+  const contentWidth = parentWidth - padding * 2;
+  const contentX = parentX + padding;
+  const contentY = parentY + padding;
+
+  if (direction === 'row') {
+    // Horizontal distribution
+    const display = parseStyleProp(style, 'display');
+    let ratios: number[];
+
+    if (display === 'grid' || display === 'inline-grid') {
+      const cols = parseStyleProp(style, 'grid-template-columns') ?? '';
+      ratios = parseGridColumns(cols, childCount);
+    } else {
+      // Flex row: equal distribution
+      ratios = Array(childCount).fill(1);
+    }
+
+    // Extend ratios to match child count (wrap grid rows)
+    while (ratios.length < childCount) {
+      ratios.push(ratios[ratios.length - 1] ?? 1);
+    }
+
+    const totalGap = gap * (Math.min(ratios.length, childCount) - 1);
+    const totalFr = ratios.reduce((sum, r) => sum + r, 0);
+    const availableWidth = contentWidth - totalGap;
+
+    const slots: LayoutSlot[] = [];
+    let currentX = contentX;
+    const colCount = ratios.length;
+
+    for (let i = 0; i < childCount; i++) {
+      const colIndex = i % colCount;
+      const row = Math.floor(i / colCount);
+
+      if (colIndex === 0 && row > 0) {
+        currentX = contentX;
+      }
+
+      const colWidth = (ratios[colIndex]! / totalFr) * availableWidth;
+      slots.push({
+        x: currentX,
+        y: contentY + row * 200, // Estimate 200px per grid row
+        width: colWidth,
+      });
+      currentX += colWidth + gap;
+    }
+
+    return slots;
+  }
+
+  // Column (vertical) distribution — all children get full width
+  return Array(childCount).fill(null).map(() => ({
+    x: contentX,
+    y: 0, // Will be computed during walk
+    width: contentWidth,
+  }));
+}
+
 /**
  * Create a fallback geometry estimate for non-browser or jsdom environments.
  */
 function estimateGeometry(
   element: Element,
+  slot: LayoutSlot,
   elementIndex: number,
   parentY: number,
-  slideWidth: number,
 ): ElementGeometry {
   const tagName = element.tagName.toLowerCase();
-  let width = slideWidth;
+  let width = slot.width;
   let height = 40;
-  const x = 0;
-  let y = parentY;
+  let x = slot.x;
+  let y = slot.y > 0 ? slot.y : parentY;
 
   const style = element.getAttribute('style') || '';
-  const widthMatch = style.match(/width:\s*(\d+(?:\.\d+)?)px/);
-  const heightMatch = style.match(/height:\s*(\d+(?:\.\d+)?)px/);
-  const leftMatch = style.match(/left:\s*(\d+(?:\.\d+)?)px/);
-  const topMatch = style.match(/top:\s*(\d+(?:\.\d+)?)px/);
+  const explicitWidth = parsePxValue(style, 'width');
+  const explicitHeight = parsePxValue(style, 'height');
+  const leftVal = parsePxValue(style, 'left');
+  const topVal = parsePxValue(style, 'top');
 
-  if (widthMatch?.[1]) {
-    width = Number.parseFloat(widthMatch[1]);
-  }
-  if (heightMatch?.[1]) {
-    height = Number.parseFloat(heightMatch[1]);
+  // Respect max-width constraint
+  const maxWidth = parsePxValue(style, 'max-width');
+  if (maxWidth && maxWidth < width) {
+    // Center element within parent when max-width constrains it (margin: 0 auto pattern)
+    const marginAuto = parseStyleProp(style, 'margin');
+    if (marginAuto && marginAuto.includes('auto')) {
+      x = x + (width - maxWidth) / 2;
+    }
+    width = maxWidth;
   }
 
-  const parsedX = leftMatch?.[1] ? Number.parseFloat(leftMatch[1]) : x;
-  if (topMatch?.[1]) {
-    y = Number.parseFloat(topMatch[1]);
-  } else {
-    y = parentY + elementIndex * height;
+  if (explicitWidth) {
+    width = Math.min(explicitWidth, width);
+  }
+  if (explicitHeight) {
+    height = explicitHeight;
+  }
+
+  if (leftVal !== undefined) {
+    x = leftVal;
+  }
+  if (topVal !== undefined) {
+    y = topVal;
+  } else if (slot.y <= 0) {
+    y = parentY;
   }
 
   if (/^h[1-6]$/.test(tagName)) {
@@ -249,25 +404,25 @@ function estimateGeometry(
   }
 
   if (tagName === 'img') {
-    if (!widthMatch) width = 400;
-    if (!heightMatch) height = 300;
+    if (!explicitWidth) width = Math.min(400, width);
+    if (!explicitHeight) height = 300;
   }
 
   const zIndexMatch = style.match(/z-index:\s*(-?\d+)/);
   const zIndex = zIndexMatch?.[1] ? Number.parseInt(zIndexMatch[1], 10) : 0;
 
-  return { x: parsedX, y, width, height, zIndex };
+  return { x, y, width, height, zIndex };
 }
 
 function walkElementFallback(
   element: Element,
   slideIndex: number,
+  slot: LayoutSlot,
   elementIndex: number,
   parentY: number,
-  slideWidth: number,
 ): ExtractedElement {
   const tagName = element.tagName.toLowerCase();
-  const geometry = estimateGeometry(element, elementIndex, parentY, slideWidth);
+  const geometry = estimateGeometry(element, slot, elementIndex, parentY);
   const textContent = getOwnTextContent(element);
   const inlineStyles = parseInlineStyles(element.getAttribute('style'));
   const view = element.ownerDocument.defaultView;
@@ -281,23 +436,72 @@ function walkElementFallback(
   const imageUrl = getImageUrl(element);
 
   const children: ExtractedElement[] = [];
+  const childCount = element.children.length;
+  const style = element.getAttribute('style') || '';
+  const childSlots = computeChildSlots(
+    geometry.x,
+    geometry.y,
+    geometry.width,
+    childCount,
+    style,
+  );
+
   let childY = geometry.y;
 
-  for (let i = 0; i < element.children.length; i++) {
+  for (let i = 0; i < childCount; i++) {
     const child = element.children.item(i);
     if (!child) {
       continue;
     }
 
+    const childSlot = childSlots[i] ?? { x: geometry.x, y: 0, width: geometry.width };
+    // For column layout, update Y progressively; for row, use slot's Y
+    if (childSlot.y <= 0) {
+      childSlot.y = childY;
+    }
+
     const extractedChild = walkElementFallback(
       child,
       slideIndex,
+      childSlot,
       i,
-      childY,
-      slideWidth,
+      childSlot.y,
     );
     children.push(extractedChild);
-    childY = extractedChild.geometry.y + extractedChild.geometry.height;
+
+    // Only advance Y for column layouts
+    const direction = getLayoutDirection(style);
+    if (direction === 'column') {
+      childY = extractedChild.geometry.y + extractedChild.geometry.height;
+    } else {
+      // For row layouts, track max height for the current row
+      const colCount = childSlots.length > 0
+        ? Math.min(childSlots.length, childCount)
+        : childCount;
+      const isLastInRow = (i + 1) % colCount === 0 || i === childCount - 1;
+      if (isLastInRow) {
+        // Find max height in this row
+        const rowStart = Math.floor(i / colCount) * colCount;
+        let maxH = 0;
+        for (let j = rowStart; j <= i; j++) {
+          const c = children[j];
+          if (c) {
+            maxH = Math.max(maxH, c.geometry.height);
+          }
+        }
+        const gap = parsePxValue(style, 'gap') ?? 0;
+        childY = (children[rowStart]?.geometry.y ?? childY) + maxH + gap;
+      }
+    }
+  }
+
+  // Update element height to encompass all children
+  if (children.length > 0) {
+    const lastChild = children[children.length - 1]!;
+    const childrenBottom = lastChild.geometry.y + lastChild.geometry.height;
+    const padding = parsePxValue(style, 'padding') ?? 0;
+    const computedHeight = childrenBottom - geometry.y + padding;
+    geometry.height = Math.max(geometry.height, computedHeight);
   }
 
   return {
@@ -349,12 +553,13 @@ export function extract(documents: Document[], slideWidth: number): ExtractResul
           continue;
         }
 
+        const slot: LayoutSlot = { x: 0, y: 0, width: slideWidth };
         const extracted = walkElementFallback(
           child,
           slideIndex,
+          slot,
           i,
           currentY,
-          slideWidth,
         );
         elements.push(extracted);
         currentY = extracted.geometry.y + extracted.geometry.height;

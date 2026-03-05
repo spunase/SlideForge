@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { convert } from '@core/convert';
+import { inlineCssIntoHtml } from '@core/pipeline/stages/render';
 import { runSelfCheckWithAutoFix } from '@core/selfCheck';
 import type { ConversionOptions, ProgressInfo, SelfCheckIssue } from '@core/types';
 import { useConversionStore } from '../store';
@@ -25,9 +26,11 @@ export function useConversion() {
   const setProgress = useConversionStore((s) => s.setProgress);
   const setStage = useConversionStore((s) => s.setStage);
   const setDownloadUrl = useConversionStore((s) => s.setDownloadUrl);
+  const setOutputSizeBytes = useConversionStore((s) => s.setOutputSizeBytes);
   const setError = useConversionStore((s) => s.setError);
   const setMappedSlides = useConversionStore((s) => s.setMappedSlides);
   const addSlidePreview = useConversionStore((s) => s.addSlidePreview);
+  const setSourceHtml = useConversionStore((s) => s.setSourceHtml);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -46,8 +49,10 @@ export function useConversion() {
       return;
     }
 
-    // Read the HTML file as text
+    // Read the HTML file as text and inline external CSS for the comparison view
     const htmlString = await htmlFile.text();
+    const htmlWithCss = await inlineCssIntoHtml(htmlString, files);
+    setSourceHtml(htmlWithCss);
 
     // Build conversion options from slide size
     const options: ConversionOptions = {
@@ -69,6 +74,7 @@ export function useConversion() {
     setStatus('converting');
     setProgress(0);
     setStage(null);
+    setOutputSizeBytes(null);
     setError(null);
 
     try {
@@ -83,6 +89,7 @@ export function useConversion() {
       // Create a downloadable blob URL from the result
       const url = URL.createObjectURL(result.blob);
       setDownloadUrl(url);
+      setOutputSizeBytes(result.blob.size);
       setStatus('done');
     } catch (err: unknown) {
       if (controller.signal.aborted) {
@@ -100,7 +107,7 @@ export function useConversion() {
     } finally {
       abortControllerRef.current = null;
     }
-  }, [files, slideSize, setStatus, setProgress, setStage, setDownloadUrl, setError, setMappedSlides, addSlidePreview]);
+  }, [files, slideSize, setStatus, setProgress, setStage, setDownloadUrl, setOutputSizeBytes, setError, setMappedSlides, addSlidePreview, setSourceHtml]);
 
   const runSelfCheck = useCallback(async () => {
     const controller = new AbortController();
@@ -109,6 +116,7 @@ export function useConversion() {
     setStatus('converting');
     setProgress(0);
     setStage('self-check');
+    setOutputSizeBytes(null);
     setError(null);
 
     const onProgress = (info: ProgressInfo) => {
@@ -155,6 +163,7 @@ export function useConversion() {
 
       const url = URL.createObjectURL(selfCheck.result.blob);
       setDownloadUrl(url);
+      setOutputSizeBytes(selfCheck.result.blob.size);
       setProgress(100);
 
       if (selfCheck.fixesApplied.length > 0) {
@@ -185,7 +194,7 @@ export function useConversion() {
     } finally {
       abortControllerRef.current = null;
     }
-  }, [slideSize.height, slideSize.width, setStatus, setProgress, setStage, setError, setDownloadUrl]);
+  }, [slideSize.height, slideSize.width, setStatus, setProgress, setStage, setError, setDownloadUrl, setOutputSizeBytes]);
 
   const cancelConversion = useCallback(() => {
     abortControllerRef.current?.abort();

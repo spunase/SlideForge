@@ -195,6 +195,7 @@ export function build(mappedSlides: MappedShape[][]): BuildResult {
         border: convertBorder(shape.border),
         shadow: convertShadow(shape.shadow),
         textRuns,
+        textAlign: shape.textStyle?.textAlign,
       };
 
       slideShapes.push(slideShape);

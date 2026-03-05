@@ -6,6 +6,7 @@
 
 export { convert } from './convert';
 export { runSelfCheckWithAutoFix } from './selfCheck';
+export { inlineCssIntoHtml } from './pipeline/stages/render';
 
 export type {
   ConversionOptions,

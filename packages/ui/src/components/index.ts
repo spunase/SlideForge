@@ -6,3 +6,4 @@ export { DownloadButton } from './DownloadButton';
 export { ErrorDisplay } from './ErrorDisplay';
 export { SlidePreviewRenderer } from './SlidePreviewRenderer';
 export { SlidePreviewModal } from './SlidePreviewModal';
+export { ComparisonSlider } from './ComparisonSlider';

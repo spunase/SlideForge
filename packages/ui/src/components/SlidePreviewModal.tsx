@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useConversionStore } from '../store';
 import { SlidePreviewRenderer } from './SlidePreviewRenderer';
+import { ComparisonSlider } from './ComparisonSlider';
 
 interface ViewportSize {
   width: number;
@@ -52,6 +53,9 @@ export function SlidePreviewModal() {
   const setSelectedSlideIndex = useConversionStore(
     (s) => s.setSelectedSlideIndex,
   );
+  const sourceHtml = useConversionStore((s) => s.sourceHtml);
+  const comparisonMode = useConversionStore((s) => s.comparisonMode);
+  const setComparisonMode = useConversionStore((s) => s.setComparisonMode);
 
   const [viewportSize, setViewportSize] = useState<ViewportSize>(() => getViewportSize());
 
@@ -154,8 +158,32 @@ export function SlidePreviewModal() {
             </div>
           </div>
 
-          <div className="hidden text-xs text-[#A9A9A9] sm:block">
-            Use <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-[10px]">Esc</kbd> to close, arrows to navigate
+          <div className="flex items-center gap-4">
+            {sourceHtml && (
+              <button
+                type="button"
+                className={[
+                  'cursor-pointer inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-all duration-150',
+                  comparisonMode
+                    ? 'border-[var(--sf-accent)]/50 bg-[var(--sf-accent)]/15 text-[var(--sf-accent)]'
+                    : 'border-white/15 bg-white/5 text-[#A9A9A9] hover:bg-white/10 hover:text-white',
+                ].join(' ')}
+                onClick={() => setComparisonMode(!comparisonMode)}
+                aria-label={comparisonMode ? 'Exit comparison mode' : 'Compare HTML vs PPTX'}
+                aria-pressed={comparisonMode}
+                data-testid="comparison-toggle"
+              >
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                  <path strokeLinecap="round" d="M12 3v18M3 12h18" />
+                  <rect x="3" y="3" width="7" height="18" rx="1" strokeWidth={1.5} />
+                  <rect x="14" y="3" width="7" height="18" rx="1" strokeWidth={1.5} />
+                </svg>
+                Compare
+              </button>
+            )}
+            <div className="hidden text-xs text-[#A9A9A9] sm:block">
+              Use <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-[10px]">Esc</kbd> to close, arrows to navigate
+            </div>
           </div>
 
           <button
@@ -204,12 +232,23 @@ export function SlidePreviewModal() {
               maxWidth: '100%',
             }}
           >
-            <SlidePreviewRenderer
-              shapes={shapes}
-              slideWidth={slideSize.width}
-              slideHeight={slideSize.height}
-              className="h-full w-full rounded-[18px]"
-            />
+            {comparisonMode && sourceHtml ? (
+              <ComparisonSlider
+                sourceHtml={sourceHtml}
+                shapes={shapes}
+                slideWidth={slideSize.width}
+                slideHeight={slideSize.height}
+                width={fittedSize.width}
+                height={fittedSize.height}
+              />
+            ) : (
+              <SlidePreviewRenderer
+                shapes={shapes}
+                slideWidth={slideSize.width}
+                slideHeight={slideSize.height}
+                className="h-full w-full rounded-[18px]"
+              />
+            )}
           </div>
 
           <button

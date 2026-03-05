@@ -86,6 +86,83 @@ State managed with Zustand. Styled with TailwindCSS.
 - All processing is client-side. Never add server calls, analytics scripts, or external requests that send user data.
 - jszip operates async — all PPTX assembly functions must be async/await.
 
+## Debug Lessons — Pipeline Gotchas
+
+These are hard-won lessons from debugging the conversion pipeline. Read before modifying pipeline stages.
+
+### jsdom CSS Cascade Does NOT Work
+
+**Problem**: jsdom's `getComputedStyle()` does NOT resolve class-based styles from `<style>` blocks — only inline `style=""` attributes are reflected. This is a documented limitation (jsdom issues #2986, #2363, #274).
+
+**Consequence**: In test/Node mode, any CSS applied via classes (`.card { background: white }`) is invisible to the extract stage. Elements appear unstyled — no fills, no shadows, no borders.
+
+**Solution**: `render.ts` has `applyStylesToInline()` — a manual CSS-to-inline resolver that parses `<style>` blocks, matches selectors against elements, resolves `var()` references, and stamps computed values as inline `style` attributes before the extract stage runs.
+
+**Rule**: When adding new CSS property support, verify it works in BOTH browser mode (iframe + getComputedStyle) AND jsdom mode (inline style resolver). Run the dashboard integration test to confirm.
+
+### CSS Custom Properties (`var()`) Don't Work in jsdom
+
+**Problem**: cssstyle (jsdom's CSS engine) strips `var()` expressions as invalid values (cssstyle#89, jsdom#1895). Any CSS using custom properties resolves to empty strings.
+
+**Solution**: `render.ts` has `resolveVarReferences()` that recursively resolves `var(--name, fallback)` patterns from `:root` declarations. Supports nested vars up to 10 levels deep.
+
+**Rule**: If a fixture uses CSS custom properties, the CSS must be in the assets map so `inlineLinkedStylesheets()` can inline it and `applyStylesToInline()` can resolve the vars.
+
+### New CSS Properties Must Flow Through ALL Pipeline Stages
+
+When adding support for a new CSS property (e.g., `text-align`), it must be wired through every stage:
+
+1. **extract.ts** — Add to `TRACKED_STYLE_PROPERTIES` array so `pickTrackedStyles()` captures it
+2. **analyze.ts / PropertyMapper** — Map the raw CSS value to the typed `MappedShape` field
+3. **build.ts** — Convert the `MappedShape` field to the `SlideShape` / OOXML equivalent
+4. **SlideBuilder.ts** — Emit the correct DrawingML XML element
+
+Missing ANY stage silently drops the property. The `textAlign` bug was caused by step 3-4 being skipped — it was parsed and mapped correctly but never emitted as `<a:pPr algn="..."/>` in the XML.
+
+### Geometry Estimation in jsdom Requires Layout Awareness
+
+**Problem**: In jsdom/DOMParser mode, `getBoundingClientRect()` returns zeros. The fallback `estimateGeometry()` must infer positions from CSS properties stamped as inline styles.
+
+**Key behaviors**:
+- Detects `display: flex/grid` to distribute children horizontally vs vertically
+- Parses `grid-template-columns` (e.g., `2fr 1fr`) into proportional width ratios
+- Respects `max-width` with `margin: 0 auto` centering
+- Accounts for `padding` and `gap` in child slot computation
+- Only `px` units are matched — `%`, `em`, `rem`, `vw` are not supported
+
+**Rule**: When testing new HTML fixtures in jsdom, verify geometry is reasonable (elements from different columns should have different `x` values, not all `x=0, w=slideWidth`).
+
+### External CSS Must Be in the Assets Map
+
+**Problem**: When only HTML is uploaded, external `<link rel="stylesheet">` CSS files are not available. The pipeline silently produces unstyled output.
+
+**Solution**: `inlineLinkedStylesheets()` in `render.ts` checks:
+1. The uploaded assets map (normalized key matching)
+2. A fetch from the server (relative URLs only, browser mode)
+
+**Rule**: Integration tests MUST include CSS files in the assets map:
+```typescript
+assets.set('styles.css', new Blob([css], { type: 'text/css' }));
+```
+
+### OOXML Text Alignment Is Paragraph-Level
+
+Text alignment in OOXML is set on `<a:pPr algn="..."/>` inside `<a:p>`, NOT on run properties `<a:rPr>`. The mapping:
+
+| CSS `text-align` | OOXML `algn` |
+|-------------------|-------------|
+| `left`            | `l`         |
+| `center`          | `ctr`       |
+| `right`           | `r`         |
+| `justify`         | `just`      |
+
+### Stale `dist/` Artifacts Cause TS6305 Errors
+
+After editing files across packages, stale `.d.ts` files in `packages/core/dist` and `packages/ui/dist` can cause "Output file has not been built from source" errors. Fix:
+```bash
+npx tsc --build --clean && rm -rf packages/core/dist packages/ui/dist && npx tsc --build
+```
+
 ## Key Workflows
 
 ### Adding a new CSS → PPTX mapping
