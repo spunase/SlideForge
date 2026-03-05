@@ -11,6 +11,7 @@ Last Updated: 2026-03-04
 | FX-CSS-001 | Advanced CSS | Gradients, borders, shadows, radius | Fidelity checks |
 | FX-CSS-002 | Advanced CSS | Flex layout, nested lists, table styles | Structure checks |
 | FX-CSS-003 | Advanced CSS | Kearney three-column infographic replica (`tests/fixtures/kearney/index.html` + `styles.css`) | High-density layout and typography fidelity |
+| FX-CSS-004 | Advanced CSS | BCG transformation timeline replica (`tests/fixtures/bcg/index.html` + `styles.css`) | Timeline layout, icon strokes, and long-form text fidelity |
 | FX-ASSET-001 | Asset-heavy | External CSS + images + custom fonts | Asset resolution |
 | FX-ASSET-002 | Asset-heavy | Dashboard fixture bundle (`tests/fixtures/dashboard/index.html` + `styles.css`) | Linked stylesheet resolution |
 | FX-STRESS-001 | Stress | 10 slides, <=2000 elements | Performance SLO |
