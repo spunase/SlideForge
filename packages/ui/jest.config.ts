@@ -3,6 +3,8 @@ import type { Config } from 'jest';
 const config: Config = {
   displayName: 'ui',
   testEnvironment: 'jsdom',
+  modulePathIgnorePatterns: ['<rootDir>/dist/'],
+  testPathIgnorePatterns: ['<rootDir>/dist/'],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', { useESM: true }],
   },

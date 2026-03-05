@@ -100,5 +100,23 @@ describe('segmentSlides', () => {
       const { segments } = segmentSlides(html);
       expect(segments).toHaveLength(1);
     });
+
+    it('should preserve head styles for each extracted segment', () => {
+      const html = `
+        <html>
+          <head>
+            <style>.slide { background: rgb(255, 0, 0); }</style>
+          </head>
+          <body>
+            <section class="slide" data-slide="1"><h1>Styled</h1></section>
+          </body>
+        </html>
+      `;
+
+      const { segments } = segmentSlides(html);
+      expect(segments).toHaveLength(1);
+      expect(segments[0]).toContain('<head>');
+      expect(segments[0]).toContain('.slide { background: rgb(255, 0, 0); }');
+    });
   });
 });

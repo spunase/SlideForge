@@ -31,7 +31,7 @@ export class Pipeline {
    */
   async run(
     html: string,
-    _assets: Map<string, Blob>,
+    assets: Map<string, Blob>,
     options: ConversionOptions,
     onProgress?: ProgressCallback,
     signal?: AbortSignal,
@@ -40,6 +40,7 @@ export class Pipeline {
     const progress = new ProgressEmitter(onProgress);
     const token = new CancellationToken(signal);
     const allWarnings: ConversionWarning[] = [];
+    let renderCleanup: (() => void) | undefined;
 
     try {
       // ── Stage 1: Ingest ──────────────────────────────────────────────
@@ -55,7 +56,8 @@ export class Pipeline {
       // ── Stage 2: Render ──────────────────────────────────────────────
       progress.emit('render', 0, startTime);
       const renderStart = Date.now();
-      const renderResult = render(ingestResult.segments);
+      const renderResult = await render(ingestResult.segments, options, assets);
+      renderCleanup = renderResult.cleanup;
       const renderMs = Date.now() - renderStart;
       progress.emit('render', 1, startTime);
 
@@ -67,6 +69,8 @@ export class Pipeline {
       const extractResult = extract(renderResult.documents, options.slideWidth);
       const extractMs = Date.now() - extractStart;
       progress.emit('extract', 1, startTime);
+      renderCleanup?.();
+      renderCleanup = undefined;
 
       token.throwIfCancelled();
 
@@ -126,6 +130,9 @@ export class Pipeline {
         mappedShapes: analyzeResult.slides,
       };
     } catch (error: unknown) {
+      renderCleanup?.();
+      renderCleanup = undefined;
+
       // Build an error report instead of crashing
       const totalMs = Date.now() - startTime;
       const errorMessage =

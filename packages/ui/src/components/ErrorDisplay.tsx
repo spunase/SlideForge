@@ -48,7 +48,7 @@ export function ErrorDisplay() {
         type="button"
         onClick={reset}
         className="
-          self-start h-9 rounded-lg px-4
+          self-start h-9 rounded-lg px-4 cursor-pointer
           text-sm font-medium
           border border-[#FF4D4D]/30 text-[#FF4D4D]
           transition-all duration-150

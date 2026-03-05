@@ -10,6 +10,20 @@
 
 import type { ConversionWarning } from '../types';
 
+function serializeSegmentWithHead(doc: Document, bodyContent: string): string {
+  return [
+    '<!doctype html>',
+    '<html>',
+    `<head>${doc.head?.innerHTML ?? ''}</head>`,
+    `<body>${bodyContent}</body>`,
+    '</html>',
+  ].join('');
+}
+
+function buildSegment(doc: Document, element: Element): string {
+  return serializeSegmentWithHead(doc, element.outerHTML);
+}
+
 /**
  * Segment an HTML string into individual slide HTML fragments.
  *
@@ -44,7 +58,7 @@ export function segmentSlides(html: string): {
   if (dataSlideElements.length > 0) {
     const segments: string[] = [];
     dataSlideElements.forEach((el) => {
-      segments.push((el as Element).outerHTML);
+      segments.push(buildSegment(doc, el as Element));
     });
     return { segments, warnings };
   }
@@ -54,7 +68,7 @@ export function segmentSlides(html: string): {
   if (slideClassElements.length > 0) {
     const segments: string[] = [];
     slideClassElements.forEach((el) => {
-      segments.push((el as Element).outerHTML);
+      segments.push(buildSegment(doc, el as Element));
     });
     return { segments, warnings };
   }
@@ -64,7 +78,7 @@ export function segmentSlides(html: string): {
   if (sectionElements.length > 0) {
     const segments: string[] = [];
     sectionElements.forEach((el) => {
-      segments.push((el as Element).outerHTML);
+      segments.push(buildSegment(doc, el as Element));
     });
     return { segments, warnings };
   }
@@ -79,7 +93,7 @@ export function segmentSlides(html: string): {
   });
 
   return {
-    segments: [body.innerHTML],
+    segments: [serializeSegmentWithHead(doc, body.innerHTML)],
     warnings,
   };
 }

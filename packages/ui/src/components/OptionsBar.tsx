@@ -149,7 +149,7 @@ export function OptionsBar({ onGenerate }: { onGenerate: () => void }) {
         onClick={onGenerate}
         disabled={!hasFiles || isConverting}
         className="
-          h-10 rounded-lg px-6
+          h-10 rounded-lg px-6 cursor-pointer
           text-sm font-semibold
           transition-all duration-150
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]

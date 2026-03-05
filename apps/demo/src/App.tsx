@@ -36,7 +36,7 @@ export function App() {
               onClick={runSelfCheck}
               disabled={isProcessing}
               className="
-                h-9 rounded-lg border border-[#2A2A2A] bg-[#141414] px-4
+                h-9 rounded-lg border border-[#2A2A2A] bg-[#141414] px-4 cursor-pointer
                 text-xs font-semibold uppercase tracking-wide text-[#E2B714]
                 transition-all duration-150
                 hover:border-[#3B3B3B] hover:bg-[#1A1A1A]

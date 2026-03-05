@@ -10,32 +10,52 @@ export interface AnalyzeResult {
   warnings: ConversionWarning[];
 }
 
+function hasVisualContainerStyles(computedStyles: Record<string, string>): boolean {
+  const backgroundColor = computedStyles['background-color'] ?? '';
+  const hasBackground =
+    backgroundColor.length > 0 &&
+    backgroundColor !== 'transparent' &&
+    backgroundColor !== 'rgba(0, 0, 0, 0)';
+
+  const backgroundImage = computedStyles['background-image'] ?? '';
+  const hasBackgroundImage =
+    backgroundImage.length > 0 && backgroundImage !== 'none';
+
+  const borderWidth = computedStyles['border-width'] ?? computedStyles['border-top-width'] ?? '';
+  const borderStyle = computedStyles['border-style'] ?? computedStyles['border-top-style'] ?? '';
+  const hasBorder =
+    borderWidth !== '0px' &&
+    borderWidth !== '0' &&
+    borderStyle !== 'none' &&
+    borderStyle.length > 0;
+
+  const hasShadow =
+    (computedStyles['box-shadow'] ?? '') !== '' &&
+    computedStyles['box-shadow'] !== 'none';
+
+  return hasBackground || hasBackgroundImage || hasBorder || hasShadow;
+}
+
 /**
- * Flatten an ExtractedElement tree into a list of leaf/meaningful elements.
- * We map elements that have direct text content (not just inherited from children)
- * or are images.
+ * Flatten an ExtractedElement tree into meaningful shapes:
+ * - direct text nodes
+ * - images
+ * - visual container blocks (backgrounds/borders/shadows)
  */
 function flattenElements(elements: ExtractedElement[]): ExtractedElement[] {
   const result: ExtractedElement[] = [];
 
   for (const el of elements) {
-    // Include this element if it has meaningful content or styles
     const hasOwnText = el.textContent !== null && el.textContent.trim().length > 0;
     const isImage = el.tagName === 'img';
-    const hasStyles = Object.keys(el.computedStyles).length > 0;
+    const isVisualContainer = hasVisualContainerStyles(el.computedStyles);
+    const hasRenderableGeometry = el.geometry.width > 0 && el.geometry.height > 0;
 
-    if (el.children.length === 0) {
-      // Leaf element — always include if it has content
-      if (hasOwnText || isImage) {
-        result.push(el);
-      }
-    } else {
-      // Non-leaf: include if it has styles (like a styled container),
-      // and also recurse into children
-      if (hasStyles) {
-        // Push a version without children's text to avoid duplication
-        result.push(el);
-      }
+    if ((hasOwnText || isImage || isVisualContainer) && hasRenderableGeometry) {
+      result.push(el);
+    }
+
+    if (el.children.length > 0) {
       result.push(...flattenElements(el.children));
     }
   }

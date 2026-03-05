@@ -90,4 +90,32 @@ describe('Pipeline', () => {
       expect(result.report.slideCount).toBe(2);
     }
   });
+
+  it('should apply linked stylesheet assets during conversion', async () => {
+    const pipeline = new Pipeline();
+    const html = `
+      <html>
+        <head>
+          <link rel="stylesheet" href="styles.css" />
+        </head>
+        <body>
+          <div data-slide="1">
+            <div class="panel">Styled Panel</div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const css = '.panel { background-color: rgb(255, 0, 0); border: 2px solid rgb(0, 0, 0); }';
+    const assets = new Map<string, Blob>();
+    assets.set('styles.css', new Blob([css], { type: 'text/css' }));
+
+    const result = await pipeline.run(html, assets, {
+      slideWidth: 1920,
+      slideHeight: 1080,
+    });
+
+    expect(result.report.success).toBe(true);
+    expect(result.report.slideCount).toBe(1);
+  });
 });

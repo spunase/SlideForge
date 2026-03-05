@@ -28,7 +28,7 @@ export function DownloadButton() {
         download={filename}
         aria-label={`Download ${filename}`}
         className="
-          inline-flex h-12 items-center gap-2.5 rounded-xl px-8
+          inline-flex h-12 items-center gap-2.5 rounded-xl px-8 cursor-pointer
           text-base font-semibold
           bg-[#E2B714] text-[#0D0D0D]
           transition-all duration-150
@@ -58,7 +58,7 @@ export function DownloadButton() {
         type="button"
         onClick={reset}
         className="
-          text-sm text-[#AAAAAA] underline underline-offset-2 decoration-[#444444]
+          text-sm text-[#AAAAAA] underline underline-offset-2 decoration-[#444444] cursor-pointer
           transition-all duration-150
           hover:text-white hover:decoration-[#666666] hover:bg-[#1A1A1A] hover:shadow-sm hover:shadow-black/20 hover:scale-[1.02]
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]

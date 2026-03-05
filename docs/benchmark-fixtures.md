@@ -11,6 +11,7 @@ Last Updated: 2026-03-04
 | FX-CSS-001 | Advanced CSS | Gradients, borders, shadows, radius | Fidelity checks |
 | FX-CSS-002 | Advanced CSS | Flex layout, nested lists, table styles | Structure checks |
 | FX-ASSET-001 | Asset-heavy | External CSS + images + custom fonts | Asset resolution |
+| FX-ASSET-002 | Asset-heavy | Dashboard fixture bundle (`tests/fixtures/dashboard/index.html` + `styles.css`) | Linked stylesheet resolution |
 | FX-STRESS-001 | Stress | 10 slides, <=2000 elements | Performance SLO |
 | FX-STRESS-002 | Stress | Large asset bundle near memory threshold | Memory safety |
 

@@ -1,11 +1,36 @@
 import { useCallback, useRef, useState } from 'react';
 import { useConversionStore } from '../store';
 
-const ACCEPTED_EXTENSIONS = ['.html', '.htm', '.zip'];
+const PRIMARY_EXTENSIONS = ['.html', '.htm', '.zip'];
+const ASSET_EXTENSIONS = [
+  '.css',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.svg',
+  '.webp',
+  '.gif',
+  '.ttf',
+  '.otf',
+  '.woff',
+  '.woff2',
+  '.js',
+];
 const ACCEPTED_MIME_TYPES = [
   'text/html',
+  'text/css',
+  'application/javascript',
   'application/zip',
   'application/x-zip-compressed',
+  'image/png',
+  'image/jpeg',
+  'image/svg+xml',
+  'image/webp',
+  'image/gif',
+  'font/ttf',
+  'font/otf',
+  'font/woff',
+  'font/woff2',
 ];
 
 function getFileExtension(filename: string): string {
@@ -13,9 +38,23 @@ function getFileExtension(filename: string): string {
   return dotIndex >= 0 ? filename.slice(dotIndex).toLowerCase() : '';
 }
 
+function isPrimaryFile(file: File): boolean {
+  const ext = getFileExtension(file.name);
+  if (PRIMARY_EXTENSIONS.includes(ext)) return true;
+  if (file.type === 'text/html') return true;
+  if (
+    file.type === 'application/zip' ||
+    file.type === 'application/x-zip-compressed'
+  ) {
+    return true;
+  }
+  return false;
+}
+
 function isValidFile(file: File): boolean {
   const ext = getFileExtension(file.name);
-  if (ACCEPTED_EXTENSIONS.includes(ext)) return true;
+  if (PRIMARY_EXTENSIONS.includes(ext)) return true;
+  if (ASSET_EXTENSIONS.includes(ext)) return true;
   if (ACCEPTED_MIME_TYPES.includes(file.type)) return true;
   return false;
 }
@@ -26,27 +65,71 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function getUploadKey(file: File): string {
+  if (
+    typeof file.webkitRelativePath === 'string' &&
+    file.webkitRelativePath.length > 0
+  ) {
+    return file.webkitRelativePath;
+  }
+  return file.name;
+}
+
+function formatSelectionLabel(count: number, firstName: string): string {
+  if (count === 1) {
+    return firstName;
+  }
+  return `${count} files selected`;
+}
+
 export function DropZone() {
   const setFiles = useConversionStore((s) => s.setFiles);
   const setError = useConversionStore((s) => s.setError);
   const [isDragOver, setIsDragOver] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
-  const [droppedFile, setDroppedFile] = useState<{ name: string; size: number } | null>(null);
+  const [droppedFile, setDroppedFile] = useState<{
+    name: string;
+    size: number;
+    count: number;
+  } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = useCallback(
-    (file: File) => {
-      if (!isValidFile(file)) {
-        setValidationError('Unsupported file type. Upload .html or .zip');
+  const handleFiles = useCallback(
+    (fileList: FileList | File[]) => {
+      const files = Array.from(fileList);
+      if (files.length === 0) {
+        setValidationError('No files were provided.');
         setDroppedFile(null);
         return;
       }
 
-      setValidationError(null);
-      setDroppedFile({ name: file.name, size: file.size });
+      const validFiles = files.filter(isValidFile);
+      if (validFiles.length === 0) {
+        setValidationError('Unsupported file type. Upload HTML with related assets.');
+        setDroppedFile(null);
+        return;
+      }
+
+      if (!validFiles.some(isPrimaryFile)) {
+        setValidationError('Upload at least one .html/.htm file (or a .zip bundle).');
+        setDroppedFile(null);
+        return;
+      }
 
       const fileMap = new Map<string, Blob>();
-      fileMap.set(file.name, file);
+      let totalSize = 0;
+
+      for (const file of validFiles) {
+        fileMap.set(getUploadKey(file), file);
+        totalSize += file.size;
+      }
+
+      setValidationError(null);
+      setDroppedFile({
+        name: formatSelectionLabel(validFiles.length, validFiles[0]?.name ?? 'files'),
+        size: totalSize,
+        count: validFiles.length,
+      });
       setFiles(fileMap);
       setError(null);
     },
@@ -72,23 +155,21 @@ export function DropZone() {
       setIsDragOver(false);
 
       const droppedFiles = e.dataTransfer.files;
-      const first = droppedFiles[0];
-      if (droppedFiles.length > 0 && first) {
-        handleFile(first);
+      if (droppedFiles.length > 0) {
+        handleFiles(droppedFiles);
       }
     },
-    [handleFile],
+    [handleFiles],
   );
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const selectedFiles = e.target.files;
-      const first = selectedFiles?.[0];
-      if (first) {
-        handleFile(first);
+      if (selectedFiles && selectedFiles.length > 0) {
+        handleFiles(selectedFiles);
       }
     },
-    [handleFile],
+    [handleFiles],
   );
 
   const openFilePicker = useCallback(() => {
@@ -124,7 +205,7 @@ export function DropZone() {
           isDragOver
             ? 'border-2 border-[#E2B714] bg-[#E2B714]/5'
             : droppedFile && !validationError
-              ? 'border-2 border-[#333333] bg-[#1A1A1A]'
+              ? 'border-2 border-[#333333] bg-[#1A1A1A] hover:border-[#4A4A4A] hover:bg-[#202020]'
               : 'border-2 border-dashed border-[#555555] bg-[#111111] hover:border-[#777777] hover:bg-[#151515] hover:scale-[1.01] hover:shadow-lg hover:shadow-[#E2B714]/5'
         }
       `}
@@ -132,7 +213,8 @@ export function DropZone() {
       <input
         ref={inputRef}
         type="file"
-        accept=".html,.htm,.zip"
+        accept=".html,.htm,.zip,.css,.png,.jpg,.jpeg,.svg,.webp,.gif,.ttf,.otf,.woff,.woff2,.js"
+        multiple
         onChange={handleInputChange}
         className="hidden"
         tabIndex={-1}
@@ -174,6 +256,11 @@ export function DropZone() {
           </div>
           <div>
             <p className="text-sm font-medium text-white">{droppedFile.name}</p>
+            {droppedFile.count > 1 && (
+              <p className="text-xs text-[#AAAAAA]">
+                Includes linked assets for style resolution
+              </p>
+            )}
             <p className="text-xs text-[#999999]">{formatFileSize(droppedFile.size)}</p>
           </div>
           <p className="text-xs text-[#999999]">Click or drop another file to replace</p>
@@ -201,7 +288,7 @@ export function DropZone() {
               Drop your HTML file here
             </p>
             <p className="text-xs text-[#999999] mt-0.5">
-              or click to browse — accepts .html, .htm, .zip
+              or click to browse — HTML plus CSS/image/font assets
             </p>
           </div>
         </div>

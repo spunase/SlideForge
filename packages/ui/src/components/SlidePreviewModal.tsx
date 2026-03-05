@@ -67,7 +67,7 @@ export function SlidePreviewModal() {
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="absolute -top-8 right-0 text-[#AAAAAA] hover:text-white transition-colors duration-150"
+          className="absolute -top-8 right-0 text-[#AAAAAA] hover:text-white transition-colors duration-150 cursor-pointer"
           onClick={close}
           aria-label="Close preview"
         >
@@ -83,7 +83,7 @@ export function SlidePreviewModal() {
 
         <div className="flex items-center gap-4">
           <button
-            className="h-8 w-8 rounded-lg bg-[#1A1A1A] text-white disabled:opacity-30 hover:bg-[#333333] hover:scale-[1.05] transition-all duration-150"
+            className="h-8 w-8 rounded-lg bg-[#1A1A1A] text-white disabled:opacity-30 hover:bg-[#333333] hover:scale-[1.05] transition-all duration-150 cursor-pointer disabled:cursor-not-allowed"
             onClick={goPrev}
             disabled={selectedSlideIndex <= 0}
             aria-label="Previous slide"
@@ -109,7 +109,7 @@ export function SlidePreviewModal() {
           </span>
 
           <button
-            className="h-8 w-8 rounded-lg bg-[#1A1A1A] text-white disabled:opacity-30 hover:bg-[#333333] hover:scale-[1.05] transition-all duration-150"
+            className="h-8 w-8 rounded-lg bg-[#1A1A1A] text-white disabled:opacity-30 hover:bg-[#333333] hover:scale-[1.05] transition-all duration-150 cursor-pointer disabled:cursor-not-allowed"
             onClick={goNext}
             disabled={selectedSlideIndex >= totalSlides - 1}
             aria-label="Next slide"
