@@ -7,8 +7,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <script>
+      (function() {
+        var saved = localStorage.getItem('sf-theme');
+        var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        var theme = saved || (prefersLight ? 'light' : 'dark');
+        if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      })();
+    </script>
   </head>
-  <body class="bg-[#0D0D0D] text-white antialiased">
+  <body class="antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

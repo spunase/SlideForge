@@ -118,6 +118,11 @@ function buildFillXml(fill: ShapeFill): string {
  * Build the outline (border) XML for a shape's `<p:spPr>`.
  */
 function buildOutlineXml(border: ShapeBorder): string {
+  // Radius-only border (no visible stroke line)
+  if (border.width === 0) {
+    return '<a:ln w="0"><a:noFill/></a:ln>';
+  }
+
   const parts: string[] = [`<a:ln w="${border.width}">`];
 
   parts.push(`<a:solidFill>${colorToSrgbClr(border.color)}</a:solidFill>`);

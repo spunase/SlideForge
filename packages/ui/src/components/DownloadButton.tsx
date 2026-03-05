@@ -39,9 +39,9 @@ export function DownloadButton() {
   const filename = getFilenameFromStore(files);
 
   return (
-    <div className="flex w-full max-w-xl flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 backdrop-blur-md sm:px-6">
-      <div className="sf-success-reveal inline-flex items-center gap-2 rounded-full border border-[#29C778]/35 bg-[#29C778]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9BE4BE]">
-        <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[#29C778]" aria-hidden="true" />
+    <div className="flex w-full max-w-xl flex-col items-center gap-3 rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-panel)]/95 px-4 py-4 backdrop-blur-md sm:px-6">
+      <div className="sf-success-reveal inline-flex items-center gap-2 rounded-full border border-[var(--sf-success-border)] bg-[var(--sf-success-bg)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--sf-success-text)]">
+        <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[var(--sf-success)]" aria-hidden="true" />
         Ready to Download
       </div>
 
@@ -52,11 +52,11 @@ export function DownloadButton() {
         className="
           sf-fade-up inline-flex h-12 items-center gap-2.5 rounded-2xl px-8 cursor-pointer
           text-sm font-semibold tracking-[0.01em]
-          bg-[#0071E3] text-white
+          bg-[var(--sf-cta)] text-white
           transition-all duration-150
-          hover:bg-[#1180EF] hover:shadow-[0_12px_32px_rgba(0,113,227,0.3)] hover:scale-[1.015]
-          active:bg-[#0066CE]
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071E3] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
+          hover:bg-[var(--sf-cta-hover)] hover:shadow-[0_12px_32px_rgba(0,113,227,0.3)] hover:scale-[1.015]
+          active:bg-[var(--sf-cta-active)]
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sf-cta)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sf-bg-1)]
         "
         style={{ animationDelay: '80ms' }}
       >
@@ -77,7 +77,7 @@ export function DownloadButton() {
         Download PPTX
       </a>
 
-      <p className="text-[11px] tracking-[0.01em] text-[#8E8E93]">
+      <p className="text-[11px] tracking-[0.01em] text-[var(--sf-text-muted)]">
         {filename} · {formatSize(outputSizeBytes)}
       </p>
 
@@ -85,10 +85,10 @@ export function DownloadButton() {
         type="button"
         onClick={reset}
         className="
-          sf-fade-up text-xs text-[#A7A7AD] underline underline-offset-2 decoration-[#4A4A50] cursor-pointer
+          sf-fade-up text-xs text-[var(--sf-text-muted)] underline underline-offset-2 decoration-[var(--sf-border-strong)] cursor-pointer
           transition-all duration-150
-          hover:text-white hover:decoration-[#76767D] hover:bg-[#1A1A1A] hover:shadow-sm hover:shadow-black/20 hover:scale-[1.02]
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071E3] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
+          hover:text-[var(--sf-text)] hover:decoration-[var(--sf-text-subtle)] hover:bg-[var(--sf-control-bg)] hover:shadow-sm hover:scale-[1.02]
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sf-cta)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sf-bg-1)]
           rounded px-2 py-1
         "
         style={{ animationDelay: '120ms' }}

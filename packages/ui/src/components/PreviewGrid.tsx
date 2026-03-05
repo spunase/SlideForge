@@ -34,9 +34,9 @@ export function PreviewGrid() {
   if (slides.length === 0) {
     return (
       <div className="flex h-full flex-col items-center justify-center text-center">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#1A1A1A] mb-2">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--sf-control-bg)] mb-2">
           <svg
-            className="h-6 w-6 text-[#555555]"
+            className="h-6 w-6 text-[var(--sf-icon-placeholder)]"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -50,8 +50,8 @@ export function PreviewGrid() {
             />
           </svg>
         </div>
-        <p className="text-sm text-[#999999]">No slides yet</p>
-        <p className="text-xs text-[#777777] mt-0.5">Slides will appear here during conversion</p>
+        <p className="text-sm text-[var(--sf-text-muted)]">No slides yet</p>
+        <p className="text-xs text-[var(--sf-text-subtle)] mt-0.5">Slides will appear here during conversion</p>
       </div>
     );
   }
@@ -71,11 +71,11 @@ export function PreviewGrid() {
             aria-label={`Slide ${slide.index + 1} preview`}
             className="
               group relative aspect-video overflow-hidden rounded-lg
-              bg-[#1A1A1A] border border-[#2A2A2A]
+              bg-[var(--sf-control-bg)] border border-[var(--sf-border)]
               transition-all duration-150
-              hover:border-[#4A4A4A] hover:shadow-[var(--sf-shadow-soft)] hover:scale-[1.012]
+              hover:border-[var(--sf-border-strong)] hover:shadow-[var(--sf-shadow-soft)] hover:scale-[1.012]
               cursor-pointer
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sf-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sf-bg-1)]
             "
             tabIndex={0}
             onClick={() => setSelectedSlideIndex(slide.index)}
@@ -101,7 +101,7 @@ export function PreviewGrid() {
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
-                <span className="text-2xl font-semibold text-[#555555]">
+                <span className="text-2xl font-semibold text-[var(--sf-icon-placeholder)]">
                   {slide.index + 1}
                 </span>
               </div>

@@ -56,6 +56,9 @@ export function mapTextStyle(
     computed['text-decoration'] ?? computed['text-decoration-line'] ?? 'none'
   );
 
+  // --- Text Transform ---
+  const textTransform = parseTextTransform(computed['text-transform'] ?? 'none');
+
   // --- Text Align ---
   const textAlign = parseTextAlign(computed['text-align'] ?? 'left');
 
@@ -79,6 +82,7 @@ export function mapTextStyle(
       fontWeight,
       fontStyle,
       textDecoration,
+      textTransform,
       textAlign,
       lineHeight,
       letterSpacing,
@@ -208,6 +212,27 @@ function parseTextDecoration(
     return 'underline';
   }
   return 'none';
+}
+
+/**
+ * Parses CSS text-transform to the appropriate type.
+ */
+function parseTextTransform(
+  value: string
+): 'none' | 'uppercase' | 'lowercase' | 'capitalize' {
+  const trimmed = value.trim().toLowerCase();
+
+  switch (trimmed) {
+    case 'uppercase':
+      return 'uppercase';
+    case 'lowercase':
+      return 'lowercase';
+    case 'capitalize':
+      return 'capitalize';
+    case 'none':
+    default:
+      return 'none';
+  }
 }
 
 /**

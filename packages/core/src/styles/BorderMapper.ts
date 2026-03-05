@@ -29,6 +29,9 @@ export function mapBorder(
   const rawColor =
     computed['border-color'] ??
     computed['border-top-color'] ??
+    computed['border-left-color'] ??
+    computed['border-right-color'] ??
+    computed['border-bottom-color'] ??
     '';
   const color = rawColor ? normalizeColor(rawColor) : '000000';
 
@@ -70,6 +73,9 @@ function parseBorderWidth(computed: Record<string, string>): number {
   const raw =
     computed['border-width'] ??
     computed['border-top-width'] ??
+    computed['border-left-width'] ??
+    computed['border-right-width'] ??
+    computed['border-bottom-width'] ??
     '';
 
   return parsePxValue(raw, 0);
@@ -84,6 +90,9 @@ function parseBorderStyle(
   const raw =
     computed['border-style'] ??
     computed['border-top-style'] ??
+    computed['border-left-style'] ??
+    computed['border-right-style'] ??
+    computed['border-bottom-style'] ??
     '';
   const trimmed = raw.trim().toLowerCase();
 
@@ -124,6 +133,36 @@ function parseBorderRadius(
 
   if (!raw || raw.trim() === '0' || raw.trim() === '0px' || raw.trim() === '') {
     return undefined;
+  }
+
+  // Handle percentage-based border-radius (e.g. 50% = fully rounded)
+  const pctMatch = raw.trim().match(/^([\d.]+)%/);
+  if (pctMatch) {
+    const pct = parseFloat(pctMatch[1] ?? '0');
+    if (pct >= 50) {
+      // 50% or more = fully rounded; use max OOXML adj value (50000)
+      // This gets passed through pxToEmu in build.ts, but the SlideBuilder
+      // caps it via the roundRect adj formula. Use a large px sentinel.
+      warnings.push({
+        code: 'SF-CSS-001',
+        severity: 'low',
+        property: 'border-radius',
+        message:
+          'Percentage border-radius approximated as fully rounded in PPTX',
+        original: raw,
+      });
+      return 9999; // sentinel: fully rounded
+    }
+    // For partial percentages, approximate as a fraction of a typical element
+    warnings.push({
+      code: 'SF-CSS-001',
+      severity: 'low',
+      property: 'border-radius',
+      message:
+        'Percentage border-radius approximated in PPTX',
+      original: raw,
+    });
+    return Math.round((pct / 100) * 200); // rough approximation
   }
 
   const radius = parsePxValue(raw, 0);

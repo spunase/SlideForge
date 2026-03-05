@@ -7,3 +7,4 @@ export { ErrorDisplay } from './ErrorDisplay';
 export { SlidePreviewRenderer } from './SlidePreviewRenderer';
 export { SlidePreviewModal } from './SlidePreviewModal';
 export { ComparisonSlider } from './ComparisonSlider';
+export { ThemeToggle } from './ThemeToggle';

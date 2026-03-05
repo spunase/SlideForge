@@ -1,6 +1,6 @@
-export { useConversionStore } from './store';
-export type { ConversionStore } from './store';
+export { useConversionStore, useThemeStore } from './store';
+export type { ConversionStore, Theme, ThemeStore } from './store';
 
-export { DropZone, PreviewGrid, OptionsBar, ProgressIndicator, DownloadButton, ErrorDisplay } from './components';
+export { DropZone, PreviewGrid, OptionsBar, ProgressIndicator, DownloadButton, ErrorDisplay, ThemeToggle } from './components';
 
-export { useConversion } from './hooks';
+export { useConversion, useSystemTheme } from './hooks';

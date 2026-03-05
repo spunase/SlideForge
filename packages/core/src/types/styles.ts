@@ -39,6 +39,7 @@ export interface TextStyle {
   fontWeight: 'normal' | 'bold';
   fontStyle: 'normal' | 'italic';
   textDecoration: 'none' | 'underline' | 'line-through';
+  textTransform: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
   textAlign: 'left' | 'center' | 'right' | 'justify';
   lineHeight: number;        // ratio (1.5 = 150%)
   letterSpacing: number;     // pixels

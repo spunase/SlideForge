@@ -22,6 +22,7 @@ const mockShapes: MappedShape[] = [
       fontWeight: 'normal',
       fontStyle: 'normal',
       textDecoration: 'none',
+      textTransform: 'none',
       textAlign: 'left',
       lineHeight: 1.2,
       letterSpacing: 0,

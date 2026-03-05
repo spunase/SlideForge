@@ -99,6 +99,22 @@ describe('mapGradient', () => {
       const { warnings } = mapGradient('conic-gradient(red, blue)');
       expect(warnings.some(w => w.code === 'SF-CSS-002')).toBe(true);
     });
+
+    it('should extract first color from conic-gradient with deg positions', () => {
+      const { fill } = mapGradient(
+        'conic-gradient(#3b82f6 0deg 263deg, #10b981 263deg 310deg, #f59e0b 310deg 360deg)'
+      );
+      expect(fill.type).toBe('solid');
+      expect(fill.color).toBe('3B82F6');
+    });
+
+    it('should extract first color from conic-gradient with from keyword', () => {
+      const { fill } = mapGradient(
+        'conic-gradient(from 0deg, #ff0000 0deg 90deg, #00ff00 90deg 180deg)'
+      );
+      expect(fill.type).toBe('solid');
+      expect(fill.color).toBe('FF0000');
+    });
   });
 
   describe('unknown gradient types', () => {

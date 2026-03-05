@@ -6,12 +6,16 @@ import { ProgressIndicator } from '@ui/components/ProgressIndicator';
 import { DownloadButton } from '@ui/components/DownloadButton';
 import { ErrorDisplay } from '@ui/components/ErrorDisplay';
 import { SlidePreviewModal } from '@ui/components/SlidePreviewModal';
+import { ThemeToggle } from '@ui/components/ThemeToggle';
 import { useConversion } from '@ui/hooks/useConversion';
+import { useSystemTheme } from '@ui/hooks/useSystemTheme';
 
 export function App() {
   const status = useConversionStore((s) => s.status);
   const files = useConversionStore((s) => s.files);
   const { startConversion, runSelfCheck } = useConversion();
+
+  useSystemTheme();
 
   const hasFiles = files.size > 0;
   const isIdle = status === 'idle';
@@ -27,10 +31,13 @@ export function App() {
       <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col overflow-hidden">
         {/* Header */}
         <header className="mb-4 shrink-0 text-center">
+          <div className="flex items-center justify-end mb-2">
+            <ThemeToggle />
+          </div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            <span className="text-[#E2B714]">SlideForge</span>
+            <span className="text-[var(--sf-accent-text)]">SlideForge</span>
           </h1>
-          <p className="mt-1 text-xs text-[#999999] sm:text-sm">
+          <p className="mt-1 text-xs text-[var(--sf-text-muted)] sm:text-sm">
             HTML &rarr; PowerPoint in seconds
           </p>
           <div className="mt-3">
@@ -39,11 +46,11 @@ export function App() {
               onClick={runSelfCheck}
               disabled={isProcessing}
               className="
-                h-9 rounded-lg border border-[#2A2A2A] bg-[#141414] px-4 cursor-pointer
-                text-xs font-semibold uppercase tracking-wide text-[#E2B714]
+                h-9 rounded-lg border border-[var(--sf-border)] bg-[var(--sf-control-bg-alt)] px-4 cursor-pointer
+                text-xs font-semibold uppercase tracking-wide text-[var(--sf-accent-text)]
                 transition-all duration-150
-                hover:border-[#3B3B3B] hover:bg-[#1A1A1A]
-                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
+                hover:border-[var(--sf-border-strong)] hover:bg-[var(--sf-control-bg)]
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sf-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sf-bg-1)]
                 disabled:cursor-not-allowed disabled:opacity-40
               "
             >
@@ -56,7 +63,7 @@ export function App() {
         <main
           className="
             flex flex-1 flex-col overflow-hidden
-            rounded-2xl border border-[color:var(--sf-border)] bg-[color:var(--sf-panel)]/95 backdrop-blur-sm
+            rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-panel)]/95 backdrop-blur-sm
             p-4 shadow-[var(--sf-shadow-soft)]
             sm:p-6
           "
@@ -101,7 +108,7 @@ export function App() {
 
         {/* Footer */}
         <footer className="mt-3 shrink-0 text-center">
-          <p className="text-xs text-[#888888]">
+          <p className="text-xs text-[var(--sf-text-subtle)]">
             100% client-side &mdash; your files never leave the browser
           </p>
         </footer>

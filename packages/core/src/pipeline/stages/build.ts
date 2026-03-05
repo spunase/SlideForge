@@ -54,6 +54,14 @@ function convertFill(fill: FillStyle): ShapeFill {
  */
 function convertBorder(border: BorderStyle): ShapeBorder | undefined {
   if (border.style === 'none' || border.width === 0) {
+    // Still pass through border-radius even without a visible stroke
+    if (border.radius !== undefined && border.radius > 0) {
+      return {
+        width: 0,
+        color: '000000',
+        radius: pxToEmu(border.radius),
+      };
+    }
     return undefined;
   }
 
@@ -132,9 +140,23 @@ function convertTextRuns(
   // Convert px font size to points (1px = 0.75pt at 96 DPI)
   const fontSizePt = textStyle.fontSize * 0.75;
 
+  // Apply text-transform
+  let text = textContent.trim();
+  switch (textStyle.textTransform) {
+    case 'uppercase':
+      text = text.toUpperCase();
+      break;
+    case 'lowercase':
+      text = text.toLowerCase();
+      break;
+    case 'capitalize':
+      text = text.replace(/\b\w/g, (c) => c.toUpperCase());
+      break;
+  }
+
   return [
     {
-      text: textContent.trim(),
+      text,
       fontFamily: fontResult.mapped,
       fontSize: fontSizePt,
       fontWeight: textStyle.fontWeight,

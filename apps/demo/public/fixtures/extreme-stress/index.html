@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SlideForge Extreme Stress Test</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- ═══════════════════════════════════════════════════════════════
+         SLIDE 1 — KPI Performance Dashboard
+         Tests: stat cards, rounded corners, box-shadows, gradients,
+                CSS bar chart, progress bars, donut chart, nested grids
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide slide-1" data-slide="1">
+      <header class="s1-header">
+        <h1 class="s1-title">Performance Dashboard</h1>
+        <span class="s1-date">Q4 2025 Report</span>
+      </header>
+
+      <div class="s1-kpi-row">
+        <div class="kpi-card kpi-blue">
+          <span class="kpi-label">Total Users</span>
+          <span class="kpi-value">2,847</span>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: 78%"></div></div>
+          <span class="kpi-delta positive">+12.3%</span>
+        </div>
+        <div class="kpi-card kpi-green">
+          <span class="kpi-label">Uptime</span>
+          <span class="kpi-value">94.2%</span>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: 94%"></div></div>
+          <span class="kpi-delta positive">+2.1%</span>
+        </div>
+        <div class="kpi-card kpi-purple">
+          <span class="kpi-label">Revenue</span>
+          <span class="kpi-value">$1.2M</span>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: 65%"></div></div>
+          <span class="kpi-delta negative">-3.4%</span>
+        </div>
+        <div class="kpi-card kpi-orange">
+          <span class="kpi-label">Satisfaction</span>
+          <span class="kpi-value">4.8/5</span>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: 96%"></div></div>
+          <span class="kpi-delta positive">+0.3</span>
+        </div>
+      </div>
+
+      <div class="s1-charts-row">
+        <div class="chart-panel">
+          <h2 class="chart-title">Monthly Trends</h2>
+          <div class="bar-chart">
+            <div class="bar-group">
+              <div class="bar" style="height: 60%"></div>
+              <span class="bar-label">Jan</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 75%"></div>
+              <span class="bar-label">Feb</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 45%"></div>
+              <span class="bar-label">Mar</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 90%"></div>
+              <span class="bar-label">Apr</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 70%"></div>
+              <span class="bar-label">May</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar" style="height: 85%"></div>
+              <span class="bar-label">Jun</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="donut-panel">
+          <h2 class="chart-title">Traffic Sources</h2>
+          <div class="donut-chart">
+            <div class="donut-ring"></div>
+            <div class="donut-center">
+              <span class="donut-value">73%</span>
+              <span class="donut-sub">Organic</span>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <span class="legend-item"><span class="legend-dot dot-blue"></span>Organic</span>
+            <span class="legend-item"><span class="legend-dot dot-green"></span>Referral</span>
+            <span class="legend-item"><span class="legend-dot dot-orange"></span>Direct</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SLIDE 2 — Process Infographic
+         Tests: timeline, numbered steps, connector lines, CSS shapes,
+                circular badges, border-radius: 50%, icon placeholders
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide slide-2" data-slide="2">
+      <h1 class="s2-title">Product Development Lifecycle</h1>
+      <p class="s2-subtitle">From idea to market in four phases</p>
+
+      <div class="timeline">
+        <div class="timeline-line"></div>
+
+        <div class="step step-1">
+          <div class="step-badge badge-blue">
+            <span class="step-num">01</span>
+          </div>
+          <div class="step-content">
+            <h3 class="step-name">Research</h3>
+            <p class="step-desc">Market analysis, user interviews, competitive audit, and opportunity mapping</p>
+            <div class="step-tags">
+              <span class="tag tag-blue">Analytics</span>
+              <span class="tag tag-gray">Surveys</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step step-2">
+          <div class="step-badge badge-purple">
+            <span class="step-num">02</span>
+          </div>
+          <div class="step-content">
+            <h3 class="step-name">Design</h3>
+            <p class="step-desc">Wireframes, prototypes, design system, and usability testing</p>
+            <div class="step-tags">
+              <span class="tag tag-purple">Figma</span>
+              <span class="tag tag-gray">Testing</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step step-3">
+          <div class="step-badge badge-green">
+            <span class="step-num">03</span>
+          </div>
+          <div class="step-content">
+            <h3 class="step-name">Build</h3>
+            <p class="step-desc">Sprint execution, code review, CI/CD pipeline, and QA validation</p>
+            <div class="step-tags">
+              <span class="tag tag-green">Agile</span>
+              <span class="tag tag-gray">DevOps</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step step-4">
+          <div class="step-badge badge-orange">
+            <span class="step-num">04</span>
+          </div>
+          <div class="step-content">
+            <h3 class="step-name">Launch</h3>
+            <p class="step-desc">Go-to-market strategy, monitoring, feedback loops, and iteration</p>
+            <div class="step-tags">
+              <span class="tag tag-orange">Marketing</span>
+              <span class="tag tag-gray">Support</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="s2-metrics">
+        <div class="metric-pill">
+          <span class="metric-icon">&#9650;</span>
+          <span class="metric-text">85% Success Rate</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-icon">&#9679;</span>
+          <span class="metric-text">12 Week Avg. Cycle</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-icon">&#9733;</span>
+          <span class="metric-text">4.7 Team Rating</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SLIDE 3 — Product Comparison Table
+         Tests: table-like grid, pill badges, color bars, star ratings,
+                nested flex, text-shadow, variety of font sizes/weights
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide slide-3" data-slide="3">
+      <h1 class="s3-title">Plan Comparison</h1>
+      <p class="s3-subtitle">Choose the right plan for your team</p>
+
+      <div class="plan-grid">
+        <div class="plan-card plan-starter">
+          <div class="plan-header header-gray">
+            <span class="plan-badge badge-starter">Starter</span>
+            <span class="plan-price">$49</span>
+            <span class="plan-period">/month</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="check">&#10003;</span> 5 Users</li>
+            <li><span class="check">&#10003;</span> 10 GB Storage</li>
+            <li><span class="check">&#10003;</span> Email Support</li>
+            <li class="disabled"><span class="cross">&#10007;</span> API Access</li>
+            <li class="disabled"><span class="cross">&#10007;</span> Custom Domain</li>
+          </ul>
+          <div class="plan-bar bar-gray"></div>
+        </div>
+
+        <div class="plan-card plan-pro featured">
+          <div class="plan-ribbon">Most Popular</div>
+          <div class="plan-header header-blue">
+            <span class="plan-badge badge-pro">Professional</span>
+            <span class="plan-price">$149</span>
+            <span class="plan-period">/month</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="check">&#10003;</span> 25 Users</li>
+            <li><span class="check">&#10003;</span> 100 GB Storage</li>
+            <li><span class="check">&#10003;</span> Priority Support</li>
+            <li><span class="check">&#10003;</span> API Access</li>
+            <li class="disabled"><span class="cross">&#10007;</span> Custom Domain</li>
+          </ul>
+          <div class="plan-bar bar-blue"></div>
+        </div>
+
+        <div class="plan-card plan-enterprise">
+          <div class="plan-header header-purple">
+            <span class="plan-badge badge-enterprise">Enterprise</span>
+            <span class="plan-price">$299</span>
+            <span class="plan-period">/month</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="check">&#10003;</span> Unlimited Users</li>
+            <li><span class="check">&#10003;</span> 1 TB Storage</li>
+            <li><span class="check">&#10003;</span> 24/7 Support</li>
+            <li><span class="check">&#10003;</span> API Access</li>
+            <li><span class="check">&#10003;</span> Custom Domain</li>
+          </ul>
+          <div class="plan-bar bar-purple"></div>
+        </div>
+      </div>
+
+      <div class="s3-footer">
+        <div class="rating-row">
+          <span class="star">&#9733;</span>
+          <span class="star">&#9733;</span>
+          <span class="star">&#9733;</span>
+          <span class="star">&#9733;</span>
+          <span class="star-half">&#9733;</span>
+          <span class="rating-text">4.8 out of 5 — Trusted by 10,000+ teams</span>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

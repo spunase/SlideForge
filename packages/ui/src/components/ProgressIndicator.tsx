@@ -82,14 +82,14 @@ export function ProgressIndicator() {
         })}
       </div>
 
-      <div className="relative w-full overflow-hidden rounded-full bg-[#1A1A1A] h-1.5">
+      <div className="relative w-full overflow-hidden rounded-full bg-[var(--sf-progress-track)] h-1.5">
         <div
           role="progressbar"
           aria-valuenow={progress}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label={`Conversion progress: ${progress}%`}
-          className="h-full rounded-full bg-[#E2B714] transition-all duration-300 ease-[var(--sf-ease-standard)]"
+          className="h-full rounded-full bg-[var(--sf-accent)] transition-all duration-300 ease-[var(--sf-ease-standard)]"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -101,13 +101,13 @@ export function ProgressIndicator() {
       >
         {isActive && (
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E2B714] opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#E2B714]" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--sf-accent)] opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--sf-accent)]" />
           </span>
         )}
         {isDone && (
           <svg
-            className="h-4 w-4 text-[#23C16B] sf-success-reveal"
+            className="h-4 w-4 text-[var(--sf-success)] sf-success-reveal"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -118,12 +118,12 @@ export function ProgressIndicator() {
           </svg>
         )}
         <span
-          className={`text-sm capitalize ${isDone ? 'font-medium text-[#23C16B]' : 'text-[#AAAAAA]'}`}
+          className={`text-sm capitalize ${isDone ? 'font-medium text-[var(--sf-success)]' : 'text-[var(--sf-text-muted)]'}`}
         >
           {stageLabel}
         </span>
         {isActive && (
-          <span className="text-xs text-[#999999] ml-auto tabular-nums">
+          <span className="text-xs text-[var(--sf-text-subtle)] ml-auto tabular-nums">
             {progress}%
           </span>
         )}

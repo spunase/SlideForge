@@ -176,6 +176,33 @@ describe('mapTextStyle', () => {
     });
   });
 
+  describe('text-transform parsing', () => {
+    it('should default to "none" when not specified', () => {
+      const { textStyle } = mapTextStyle({});
+      expect(textStyle.textTransform).toBe('none');
+    });
+
+    it('should parse "uppercase"', () => {
+      const { textStyle } = mapTextStyle({ 'text-transform': 'uppercase' });
+      expect(textStyle.textTransform).toBe('uppercase');
+    });
+
+    it('should parse "lowercase"', () => {
+      const { textStyle } = mapTextStyle({ 'text-transform': 'lowercase' });
+      expect(textStyle.textTransform).toBe('lowercase');
+    });
+
+    it('should parse "capitalize"', () => {
+      const { textStyle } = mapTextStyle({ 'text-transform': 'capitalize' });
+      expect(textStyle.textTransform).toBe('capitalize');
+    });
+
+    it('should parse "none" explicitly', () => {
+      const { textStyle } = mapTextStyle({ 'text-transform': 'none' });
+      expect(textStyle.textTransform).toBe('none');
+    });
+  });
+
   describe('font substitution warning', () => {
     it('should produce a warning when font is substituted', () => {
       const { warnings } = mapTextStyle({ 'font-family': 'Inter' });

@@ -152,7 +152,7 @@ export function SlidePreviewModal() {
               <p className="text-sm font-semibold text-white">
                 Slide {selectedSlideIndex + 1}
               </p>
-              <p className="text-[11px] text-[#A9A9A9]">
+              <p className="text-[11px] text-[var(--sf-text-muted)]">
                 {slideSize.width} x {slideSize.height} px
               </p>
             </div>
@@ -166,7 +166,7 @@ export function SlidePreviewModal() {
                   'cursor-pointer inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-all duration-150',
                   comparisonMode
                     ? 'border-[var(--sf-accent)]/50 bg-[var(--sf-accent)]/15 text-[var(--sf-accent)]'
-                    : 'border-white/15 bg-white/5 text-[#A9A9A9] hover:bg-white/10 hover:text-white',
+                    : 'border-white/15 bg-white/5 text-[var(--sf-text-muted)] hover:bg-white/10 hover:text-white',
                 ].join(' ')}
                 onClick={() => setComparisonMode(!comparisonMode)}
                 aria-label={comparisonMode ? 'Exit comparison mode' : 'Compare HTML vs PPTX'}
@@ -181,14 +181,14 @@ export function SlidePreviewModal() {
                 Compare
               </button>
             )}
-            <div className="hidden text-xs text-[#A9A9A9] sm:block">
+            <div className="hidden text-xs text-[var(--sf-text-muted)] sm:block">
               Use <kbd className="rounded bg-white/10 px-1.5 py-0.5 text-[10px]">Esc</kbd> to close, arrows to navigate
             </div>
           </div>
 
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-all duration-150 hover:bg-white/12 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714]"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-all duration-150 hover:bg-white/12 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sf-accent)]"
             onClick={close}
             aria-label="Close preview"
           >

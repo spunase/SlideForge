@@ -61,13 +61,21 @@ export function OptionsBar({ onGenerate }: { onGenerate: () => void }) {
   );
   const selectValue = isCustom ? 'custom' : currentPresetIndex >= 0 ? String(currentPresetIndex) : 'custom';
 
+  const controlClass = `
+    h-9 rounded-lg border border-[var(--sf-control-border)] bg-[var(--sf-control-bg)] px-3
+    text-sm text-[var(--sf-text)]
+    transition-all duration-150
+    hover:border-[var(--sf-control-border-hover)] hover:bg-[var(--sf-control-bg-hover)] hover:ring-1 hover:ring-[var(--sf-accent)]/20
+    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sf-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sf-panel-elevated)]
+  `;
+
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between rounded-xl bg-[#111111] border border-[#222222] p-4">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between rounded-xl bg-[var(--sf-panel-elevated)] border border-[var(--sf-border)] p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="slide-size-preset"
-            className="text-xs font-medium text-[#AAAAAA] uppercase tracking-wider"
+            className="text-xs font-medium text-[var(--sf-text-muted)] uppercase tracking-wider"
           >
             Slide Size
           </label>
@@ -75,14 +83,7 @@ export function OptionsBar({ onGenerate }: { onGenerate: () => void }) {
             id="slide-size-preset"
             value={selectValue}
             onChange={handlePresetChange}
-            className="
-              h-9 rounded-lg border border-[#333333] bg-[#1A1A1A] px-3
-              text-sm text-white
-              transition-all duration-150
-              hover:border-[#444444] hover:bg-[#222222] hover:ring-1 hover:ring-[#E2B714]/20
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]
-              appearance-none cursor-pointer
-            "
+            className={`${controlClass} appearance-none cursor-pointer`}
           >
             {SIZE_PRESETS.map((preset, i) => (
               <option key={i} value={String(i)}>
@@ -98,7 +99,7 @@ export function OptionsBar({ onGenerate }: { onGenerate: () => void }) {
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="custom-width"
-                className="text-xs font-medium text-[#AAAAAA] uppercase tracking-wider"
+                className="text-xs font-medium text-[var(--sf-text-muted)] uppercase tracking-wider"
               >
                 Width (px)
               </label>
@@ -108,20 +109,14 @@ export function OptionsBar({ onGenerate }: { onGenerate: () => void }) {
                 min={1}
                 value={slideSize.width}
                 onChange={handleWidthChange}
-                className="
-                  h-9 w-24 rounded-lg border border-[#333333] bg-[#1A1A1A] px-3
-                  text-sm text-white font-mono
-                  transition-all duration-150
-                  hover:border-[#444444] hover:bg-[#222222] hover:ring-1 hover:ring-[#E2B714]/20
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]
-                "
+                className={`${controlClass} w-24 font-mono`}
               />
             </div>
-            <span className="pb-1.5 text-sm text-[#999999]" aria-hidden="true">&times;</span>
+            <span className="pb-1.5 text-sm text-[var(--sf-text-muted)]" aria-hidden="true">&times;</span>
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="custom-height"
-                className="text-xs font-medium text-[#AAAAAA] uppercase tracking-wider"
+                className="text-xs font-medium text-[var(--sf-text-muted)] uppercase tracking-wider"
               >
                 Height (px)
               </label>
@@ -131,13 +126,7 @@ export function OptionsBar({ onGenerate }: { onGenerate: () => void }) {
                 min={1}
                 value={slideSize.height}
                 onChange={handleHeightChange}
-                className="
-                  h-9 w-24 rounded-lg border border-[#333333] bg-[#1A1A1A] px-3
-                  text-sm text-white font-mono
-                  transition-all duration-150
-                  hover:border-[#444444] hover:bg-[#222222] hover:ring-1 hover:ring-[#E2B714]/20
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]
-                "
+                className={`${controlClass} w-24 font-mono`}
               />
             </div>
           </div>
@@ -152,11 +141,11 @@ export function OptionsBar({ onGenerate }: { onGenerate: () => void }) {
           h-10 rounded-lg px-6 cursor-pointer
           text-sm font-semibold
           transition-all duration-150
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sf-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sf-panel-elevated)]
           disabled:cursor-not-allowed disabled:opacity-40
-          bg-[#E2B714] text-[#0D0D0D]
-          hover:bg-[#F0C832] hover:shadow-lg hover:shadow-[#E2B714]/10 hover:scale-[1.02]
-          active:bg-[#D4A90F]
+          bg-[var(--sf-accent)] text-[var(--sf-bg-0)]
+          hover:bg-[var(--sf-accent-hover)] hover:shadow-lg hover:shadow-[var(--sf-accent)]/10 hover:scale-[1.02]
+          active:bg-[var(--sf-accent-active)]
         "
         aria-label={isConverting ? 'Conversion in progress' : 'Generate PowerPoint presentation'}
       >

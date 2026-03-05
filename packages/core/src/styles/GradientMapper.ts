@@ -348,6 +348,7 @@ function extractFirstColorFromGradient(value: string): string {
     // Skip direction/shape definitions
     if (
       partLower.startsWith('to ') ||
+      partLower.startsWith('from ') ||
       /^-?[\d.]+\s*(deg|grad|rad|turn)$/.test(partLower) ||
       partLower.includes('circle') ||
       partLower.includes('ellipse') ||
@@ -357,8 +358,11 @@ function extractFirstColorFromGradient(value: string): string {
       continue;
     }
 
-    // Extract color part (remove position)
-    const colorPart = partLower.replace(/([\d.]+)\s*%\s*$/, '').trim();
+    // Extract color part (remove position — both % and angle units)
+    const colorPart = partLower
+      .replace(/\s+-?[\d.]+\s*(deg|grad|rad|turn)/g, '')
+      .replace(/([\d.]+)\s*%\s*$/, '')
+      .trim();
     if (colorPart.length > 0) {
       return normalizeColor(colorPart);
     }

@@ -249,11 +249,11 @@ export function DropZone() {
 
   const dragClass = isDragOver
     ? dragIntent === 'invalid'
-      ? 'border-2 border-[#FF5D5D] bg-[#FF5D5D]/8 shadow-[0_10px_24px_rgba(255,93,93,0.12)]'
-      : 'border-2 border-[#E2B714] bg-[#E2B714]/8 shadow-[var(--sf-shadow-accent)] scale-[1.01]'
+      ? 'border-2 border-[var(--sf-danger)] bg-[var(--sf-danger-bg)] shadow-[0_10px_24px_rgba(220,38,38,0.10)]'
+      : 'border-2 border-[var(--sf-accent)] bg-[var(--sf-dropzone-ready-bg)] shadow-[var(--sf-shadow-accent)] scale-[1.01]'
     : droppedFile && !validationError
-      ? 'border-2 border-[#333333] bg-[#1A1A1A] hover:border-[#4A4A4A] hover:bg-[#202020]'
-      : 'border-2 border-dashed border-[#555555] bg-[#111111] hover:border-[#777777] hover:bg-[#151515] hover:scale-[1.01] hover:shadow-[var(--sf-shadow-soft)]';
+      ? 'border-2 border-[var(--sf-dropzone-filled-border)] bg-[var(--sf-dropzone-filled-bg)] hover:border-[var(--sf-border-strong)] hover:bg-[var(--sf-control-bg-hover)]'
+      : 'border-2 border-dashed border-[var(--sf-dropzone-border)] bg-[var(--sf-dropzone-bg)] hover:border-[var(--sf-dropzone-hover-border)] hover:bg-[var(--sf-dropzone-hover-bg)] hover:scale-[1.01] hover:shadow-[var(--sf-shadow-soft)]';
 
   const showDragMessage = isDragOver;
 
@@ -272,7 +272,7 @@ export function DropZone() {
         group relative flex flex-col items-center justify-center
         w-full flex-1 min-h-[120px] rounded-xl p-6
         transition-all duration-200 ease-[var(--sf-ease-standard)] cursor-pointer
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sf-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sf-bg-1)]
         ${dragClass}
       `}
     >
@@ -289,10 +289,10 @@ export function DropZone() {
 
       {showDragMessage ? (
         <div className="flex flex-col items-center gap-2 text-center sf-fade-up">
-          <div className={`flex h-10 w-10 items-center justify-center rounded-full ${dragIntent === 'invalid' ? 'bg-[#FF5D5D]/12' : 'bg-[#E2B714]/12'}`}>
+          <div className={`flex h-10 w-10 items-center justify-center rounded-full ${dragIntent === 'invalid' ? 'bg-[var(--sf-danger-bg)]' : 'bg-[var(--sf-accent-subtle)]'}`}>
             {dragIntent === 'invalid' ? (
               <svg
-                className="h-5 w-5 text-[#FF7B7B]"
+                className="h-5 w-5 text-[var(--sf-danger-text)]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -303,7 +303,7 @@ export function DropZone() {
               </svg>
             ) : (
               <svg
-                className="h-5 w-5 text-[#E2B714]"
+                className="h-5 w-5 text-[var(--sf-accent)]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -314,12 +314,12 @@ export function DropZone() {
               </svg>
             )}
           </div>
-          <p className={`text-sm font-medium ${dragIntent === 'invalid' ? 'text-[#FF8F8F]' : 'text-[#F6DEA4]'}`}>
+          <p className={`text-sm font-medium ${dragIntent === 'invalid' ? 'text-[var(--sf-danger-text)]' : 'text-[var(--sf-accent-text)]'}`}>
             {dragIntent === 'invalid'
               ? 'Add at least one HTML file or ZIP bundle'
               : 'Release to import files'}
           </p>
-          <p className="text-xs text-[#9D9D9D]">
+          <p className="text-xs text-[var(--sf-text-muted)]">
             {dragIntent === 'invalid'
               ? 'Styles and assets are accepted, but one primary input is required.'
               : 'HTML, CSS, image, font, and JS assets are supported.'}
@@ -327,9 +327,9 @@ export function DropZone() {
         </div>
       ) : validationError ? (
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF4D4D]/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--sf-danger-bg)]">
             <svg
-              className="h-5 w-5 text-[#FF6B6B]"
+              className="h-5 w-5 text-[var(--sf-danger-text)]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -339,16 +339,16 @@ export function DropZone() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-          <p className="text-sm text-[#FF6B6B]" role="alert">
+          <p className="text-sm text-[var(--sf-danger-text)]" role="alert">
             {validationError}
           </p>
-          <p className="text-xs text-[#999999]">Click or drop a valid file to try again</p>
+          <p className="text-xs text-[var(--sf-text-muted)]">Click or drop a valid file to try again</p>
         </div>
       ) : droppedFile ? (
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#23C16B]/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--sf-success-bg)]">
             <svg
-              className="h-5 w-5 text-[#2DD881]"
+              className="h-5 w-5 text-[var(--sf-success)]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -359,21 +359,21 @@ export function DropZone() {
             </svg>
           </div>
           <div>
-            <p className="text-sm font-medium text-white">{droppedFile.name}</p>
+            <p className="text-sm font-medium text-[var(--sf-text)]">{droppedFile.name}</p>
             {droppedFile.count > 1 && (
-              <p className="text-xs text-[#AAAAAA]">
+              <p className="text-xs text-[var(--sf-text-muted)]">
                 Includes linked assets for style resolution
               </p>
             )}
-            <p className="text-xs text-[#999999]">{formatFileSize(droppedFile.size)}</p>
+            <p className="text-xs text-[var(--sf-text-muted)]">{formatFileSize(droppedFile.size)}</p>
           </div>
-          <p className="text-xs text-[#999999]">Click or drop another file to replace</p>
+          <p className="text-xs text-[var(--sf-text-muted)]">Click or drop another file to replace</p>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1A1A1A]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--sf-control-bg)]">
             <svg
-              className="h-5 w-5 text-[#999999] transition-transform duration-200 group-hover:-translate-y-0.5"
+              className="h-5 w-5 text-[var(--sf-icon-muted)] transition-transform duration-200 group-hover:-translate-y-0.5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -388,10 +388,10 @@ export function DropZone() {
             </svg>
           </div>
           <div>
-            <p className="text-sm font-medium text-white">
+            <p className="text-sm font-medium text-[var(--sf-text)]">
               Drop your HTML file here
             </p>
-            <p className="text-xs text-[#999999] mt-0.5">
+            <p className="text-xs text-[var(--sf-text-muted)] mt-0.5">
               or click to browse - HTML plus CSS/image/font assets
             </p>
           </div>

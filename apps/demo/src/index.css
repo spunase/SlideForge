@@ -2,26 +2,209 @@
 @source "./**/*.{ts,tsx}";
 @source "../../../packages/ui/src/**/*.{ts,tsx}";
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Dark theme (default) — original SlideForge palette
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 :root {
-  --sf-bg-0: #090909;
-  --sf-bg-1: #0d0d0d;
-  --sf-bg-2: #121212;
-  --sf-panel: #101010;
-  --sf-panel-elevated: #171717;
-  --sf-border: #262626;
-  --sf-border-strong: #3b3b3b;
-  --sf-text: #f5f5f5;
-  --sf-text-muted: #9d9d9d;
-  --sf-accent: #e2b714;
-  --sf-success: #29c778;
-  --sf-danger: #ff5d5d;
-  --sf-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
-  --sf-dur-fast: 140ms;
-  --sf-dur-mid: 220ms;
-  --sf-dur-slow: 320ms;
-  --sf-shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.28);
-  --sf-shadow-accent: 0 10px 30px rgba(226, 183, 20, 0.16);
+  /* Backgrounds */
+  --sf-bg-0:              #090909;
+  --sf-bg-1:              #0D0D0D;
+  --sf-bg-2:              #121212;
+  --sf-panel:             #101010;
+  --sf-panel-elevated:    #171717;
+
+  /* Borders */
+  --sf-border:            #262626;
+  --sf-border-strong:     #3B3B3B;
+
+  /* Text */
+  --sf-text:              #F5F5F5;
+  --sf-text-muted:        #9D9D9D;
+  --sf-text-subtle:       #888888;
+
+  /* Accent / Brand */
+  --sf-accent:            #E2B714;
+  --sf-accent-hover:      #F0C832;
+  --sf-accent-active:     #D4A90F;
+  --sf-accent-text:       #E2B714;
+  --sf-accent-subtle:     rgba(226, 183, 20, 0.14);
+
+  /* Semantic: success */
+  --sf-success:           #29C778;
+  --sf-success-bg:        rgba(41, 199, 120, 0.10);
+  --sf-success-border:    rgba(41, 199, 120, 0.35);
+  --sf-success-text:      #9BE4BE;
+
+  /* Semantic: danger */
+  --sf-danger:            #FF5D5D;
+  --sf-danger-bg:         rgba(255, 77, 77, 0.05);
+  --sf-danger-border:     rgba(255, 77, 77, 0.30);
+  --sf-danger-text:       #FF4D4D;
+
+  /* Controls (inputs, selects) */
+  --sf-control-bg:        #1A1A1A;
+  --sf-control-bg-hover:  #222222;
+  --sf-control-bg-alt:    #141414;
+  --sf-control-border:    #333333;
+  --sf-control-border-hover: #444444;
+
+  /* CTA (blue download button) */
+  --sf-cta:               #0071E3;
+  --sf-cta-hover:         #1180EF;
+  --sf-cta-active:        #0066CE;
+
+  /* Icons */
+  --sf-icon-muted:        #999999;
+  --sf-icon-placeholder:  #555555;
+
+  /* DropZone states */
+  --sf-dropzone-bg:       #111111;
+  --sf-dropzone-border:   #555555;
+  --sf-dropzone-hover-bg: #151515;
+  --sf-dropzone-hover-border: #777777;
+  --sf-dropzone-ready-bg: rgba(226, 183, 20, 0.08);
+  --sf-dropzone-filled-bg: #1A1A1A;
+  --sf-dropzone-filled-border: #333333;
+
+  /* Progress */
+  --sf-progress-track:    #1A1A1A;
+
+  /* Shadows */
+  --sf-shadow-soft:       0 10px 28px rgba(0, 0, 0, 0.28);
+  --sf-shadow-accent:     0 10px 30px rgba(226, 183, 20, 0.16);
+
+  /* Atmosphere / decoration */
+  --sf-atmosphere-a:      rgba(226, 183, 20, 0.16);
+  --sf-atmosphere-b:      rgba(85, 142, 255, 0.12);
+  --sf-noise-dot:         rgba(255, 255, 255, 0.04);
+  --sf-body-grad-top:     rgba(226, 183, 20, 0.12);
+  --sf-body-grad-corner:  rgba(129, 170, 255, 0.08);
+
+  /* Skeleton */
+  --sf-skeleton-bg:       linear-gradient(160deg, #1A1A1A, #141414);
+  --sf-skeleton-border:   rgba(255, 255, 255, 0.06);
+  --sf-skeleton-shimmer:  rgba(255, 255, 255, 0.08);
+
+  /* Progress chips */
+  --sf-chip-border:       rgba(255, 255, 255, 0.08);
+  --sf-chip-bg:           rgba(255, 255, 255, 0.02);
+  --sf-chip-text:         #9F9F9F;
+  --sf-chip-active-border: rgba(226, 183, 20, 0.50);
+  --sf-chip-active-bg:    rgba(226, 183, 20, 0.14);
+  --sf-chip-active-text:  #F6DEA4;
+  --sf-chip-done-border:  rgba(41, 199, 120, 0.34);
+  --sf-chip-done-bg:      rgba(41, 199, 120, 0.12);
+  --sf-chip-done-text:    #8DE1B4;
+
+  /* Motion */
+  --sf-ease-standard:     cubic-bezier(0.22, 1, 0.36, 1);
+  --sf-dur-fast:          140ms;
+  --sf-dur-mid:           220ms;
+  --sf-dur-slow:          320ms;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Light theme — premium, awe-inspiring palette
+   Inspired by Wispr Flow, Gumroad, Linear — warm gradients, glass depth,
+   rich shadows, vibrant accents
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+html[data-theme="light"] {
+  /* Backgrounds — warm cream tones, not sterile white */
+  --sf-bg-0:              #FEFCF8;
+  --sf-bg-1:              #FBF9F4;
+  --sf-bg-2:              #F5F0E8;
+  --sf-panel:             rgba(255, 255, 255, 0.72);
+  --sf-panel-elevated:    rgba(255, 255, 255, 0.85);
+
+  /* Borders — subtle warm tint with glass-like translucency */
+  --sf-border:            rgba(0, 0, 0, 0.08);
+  --sf-border-strong:     rgba(0, 0, 0, 0.14);
+
+  /* Text — rich warm blacks */
+  --sf-text:              #1A1206;
+  --sf-text-muted:        #6E6352;
+  --sf-text-subtle:       #9C9080;
+
+  /* Accent / Brand — warmer gold with depth */
+  --sf-accent:            #D4A017;
+  --sf-accent-hover:      #E8B41E;
+  --sf-accent-active:     #BF8F10;
+  --sf-accent-text:       #8B5E0A;
+  --sf-accent-subtle:     rgba(212, 160, 23, 0.14);
+
+  /* Semantic: success — rich emerald */
+  --sf-success:           #0D9E42;
+  --sf-success-bg:        rgba(13, 158, 66, 0.08);
+  --sf-success-border:    rgba(13, 158, 66, 0.22);
+  --sf-success-text:      #0A7E35;
+
+  /* Semantic: danger — deep warm red */
+  --sf-danger:            #D32F2F;
+  --sf-danger-bg:         rgba(211, 47, 47, 0.06);
+  --sf-danger-border:     rgba(211, 47, 47, 0.18);
+  --sf-danger-text:       #B71C1C;
+
+  /* Controls — glassmorphism-inspired frosted surfaces */
+  --sf-control-bg:        rgba(255, 255, 255, 0.80);
+  --sf-control-bg-hover:  rgba(255, 255, 255, 0.95);
+  --sf-control-bg-alt:    rgba(245, 240, 232, 0.65);
+  --sf-control-border:    rgba(0, 0, 0, 0.10);
+  --sf-control-border-hover: rgba(0, 0, 0, 0.20);
+
+  /* CTA — vibrant indigo-blue with depth */
+  --sf-cta:               #4338CA;
+  --sf-cta-hover:         #4F46E5;
+  --sf-cta-active:        #3730A3;
+
+  /* Icons */
+  --sf-icon-muted:        #9C9080;
+  --sf-icon-placeholder:  #C4B8A6;
+
+  /* DropZone states — warm glass */
+  --sf-dropzone-bg:       rgba(255, 255, 255, 0.55);
+  --sf-dropzone-border:   rgba(0, 0, 0, 0.10);
+  --sf-dropzone-hover-bg: rgba(255, 255, 255, 0.80);
+  --sf-dropzone-hover-border: rgba(212, 160, 23, 0.35);
+  --sf-dropzone-ready-bg: rgba(212, 160, 23, 0.10);
+  --sf-dropzone-filled-bg: rgba(255, 255, 255, 0.70);
+  --sf-dropzone-filled-border: rgba(13, 158, 66, 0.20);
+
+  /* Progress */
+  --sf-progress-track:    rgba(0, 0, 0, 0.06);
+
+  /* Shadows — layered depth with warm color tint */
+  --sf-shadow-soft:       0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(120,100,60,0.06), 0 12px 36px rgba(120,100,60,0.05);
+  --sf-shadow-accent:     0 4px 16px rgba(212,160,23,0.12), 0 12px 40px rgba(212,160,23,0.10);
+
+  /* Atmosphere — warm amber + lavender blobs, more vivid */
+  --sf-atmosphere-a:      rgba(226, 183, 20, 0.18);
+  --sf-atmosphere-b:      rgba(160, 130, 255, 0.12);
+  --sf-noise-dot:         rgba(0, 0, 0, 0.015);
+  --sf-body-grad-top:     rgba(226, 183, 20, 0.10);
+  --sf-body-grad-corner:  rgba(160, 130, 255, 0.08);
+
+  /* Skeleton — warm shimmer */
+  --sf-skeleton-bg:       linear-gradient(160deg, #F5F0E8, #EDE6D8);
+  --sf-skeleton-border:   rgba(0, 0, 0, 0.05);
+  --sf-skeleton-shimmer:  rgba(255, 255, 255, 0.85);
+
+  /* Progress chips — warm, premium feel */
+  --sf-chip-border:       rgba(0, 0, 0, 0.08);
+  --sf-chip-bg:           rgba(255, 255, 255, 0.60);
+  --sf-chip-text:         #6E6352;
+  --sf-chip-active-border: rgba(212, 160, 23, 0.55);
+  --sf-chip-active-bg:    rgba(212, 160, 23, 0.12);
+  --sf-chip-active-text:  #8B5E0A;
+  --sf-chip-done-border:  rgba(13, 158, 66, 0.30);
+  --sf-chip-done-bg:      rgba(13, 158, 66, 0.08);
+  --sf-chip-done-text:    #0A7E35;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Base styles
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
 html, body, #root {
   height: 100%;
@@ -31,13 +214,32 @@ html, body, #root {
 body {
   font-family: "SF Pro Text", "Avenir Next", "Helvetica Neue", "Segoe UI", sans-serif;
   background:
-    radial-gradient(circle at 15% 8%, rgba(226, 183, 20, 0.12), transparent 34%),
-    radial-gradient(circle at 86% 88%, rgba(129, 170, 255, 0.08), transparent 32%),
+    radial-gradient(circle at 15% 8%, var(--sf-body-grad-top), transparent 34%),
+    radial-gradient(circle at 86% 88%, var(--sf-body-grad-corner), transparent 32%),
     linear-gradient(180deg, var(--sf-bg-2), var(--sf-bg-1) 36%, var(--sf-bg-0));
+  background-color: var(--sf-bg-0);
   color: var(--sf-text);
   margin: 0;
   padding: 0;
+  transition: background-color var(--sf-dur-mid) var(--sf-ease-standard),
+              color var(--sf-dur-mid) var(--sf-ease-standard);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Light theme enhancements — glassmorphism panels, richer depth
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+html[data-theme="light"] body {
+  background:
+    radial-gradient(ellipse 600px 500px at 10% 5%, rgba(226, 183, 20, 0.14), transparent),
+    radial-gradient(ellipse 500px 400px at 90% 85%, rgba(160, 130, 255, 0.10), transparent),
+    radial-gradient(ellipse 700px 600px at 50% 50%, rgba(255, 200, 100, 0.04), transparent),
+    linear-gradient(168deg, #FBF9F4, #FEFCF8 50%, #FBF9F4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Atmosphere decoration
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
 .sf-atmosphere {
   position: absolute;
@@ -62,7 +264,7 @@ body {
   height: 360px;
   left: -120px;
   top: -96px;
-  background: rgba(226, 183, 20, 0.16);
+  background: var(--sf-atmosphere-a);
 }
 
 .sf-atmosphere::after {
@@ -70,18 +272,41 @@ body {
   height: 280px;
   right: -72px;
   bottom: -104px;
-  background: rgba(85, 142, 255, 0.12);
+  background: var(--sf-atmosphere-b);
   animation-duration: 30s;
+}
+
+/* Light theme: larger, softer blobs with more blur for dreamy premium feel */
+html[data-theme="light"] .sf-atmosphere::before {
+  width: 500px;
+  height: 500px;
+  left: -100px;
+  top: -140px;
+  filter: blur(80px);
+  opacity: 0.65;
+}
+
+html[data-theme="light"] .sf-atmosphere::after {
+  width: 420px;
+  height: 420px;
+  right: -80px;
+  bottom: -140px;
+  filter: blur(72px);
+  opacity: 0.55;
 }
 
 .sf-noise {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 0.8px, transparent 0.8px);
+  background-image: radial-gradient(var(--sf-noise-dot) 0.8px, transparent 0.8px);
   background-size: 3px 3px;
   opacity: 0.1;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Animations
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
 .sf-fade-up {
   animation: sf-fade-up var(--sf-dur-slow) var(--sf-ease-standard) both;
@@ -91,10 +316,14 @@ body {
   animation: sf-bloom var(--sf-dur-mid) var(--sf-ease-standard) both;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Progress chips
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 .sf-progress-chip {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
-  color: #9f9f9f;
+  border: 1px solid var(--sf-chip-border);
+  background: var(--sf-chip-bg);
+  color: var(--sf-chip-text);
   transition:
     border-color var(--sf-dur-fast) var(--sf-ease-standard),
     color var(--sf-dur-fast) var(--sf-ease-standard),
@@ -102,24 +331,34 @@ body {
     transform var(--sf-dur-fast) var(--sf-ease-standard);
 }
 
+/* Light theme: chips get frosted glass backdrop */
+html[data-theme="light"] .sf-progress-chip {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
 .sf-progress-chip[data-state="active"] {
-  border-color: rgba(226, 183, 20, 0.5);
-  background: rgba(226, 183, 20, 0.14);
-  color: #f6dea4;
+  border-color: var(--sf-chip-active-border);
+  background: var(--sf-chip-active-bg);
+  color: var(--sf-chip-active-text);
   transform: translateY(-1px);
 }
 
 .sf-progress-chip[data-state="done"] {
-  border-color: rgba(41, 199, 120, 0.34);
-  background: rgba(41, 199, 120, 0.12);
-  color: #8de1b4;
+  border-color: var(--sf-chip-done-border);
+  background: var(--sf-chip-done-bg);
+  color: var(--sf-chip-done-text);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Skeleton
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
 .sf-skeleton {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: linear-gradient(160deg, #1a1a1a, #141414);
+  border: 1px solid var(--sf-skeleton-border);
+  background: var(--sf-skeleton-bg);
 }
 
 .sf-skeleton::after {
@@ -130,11 +369,15 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.08) 48%,
+    var(--sf-skeleton-shimmer) 48%,
     transparent 100%
   );
   animation: sf-shimmer 1.3s linear infinite;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Keyframes
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
 @keyframes sf-drift {
   0% {
@@ -173,6 +416,10 @@ body {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Accessibility
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 @media (prefers-reduced-motion: reduce) {
   .sf-atmosphere::before,
   .sf-atmosphere::after,
@@ -180,5 +427,9 @@ body {
   .sf-success-reveal,
   .sf-skeleton::after {
     animation: none !important;
+  }
+
+  body, *, *::before, *::after {
+    transition-duration: 0ms !important;
   }
 }
