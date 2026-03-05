@@ -20,8 +20,11 @@ export function App() {
   const isError = status === 'error';
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-[#0D0D0D] px-4 py-4 sm:py-6">
-      <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col overflow-hidden">
+    <div className="relative isolate flex h-screen flex-col overflow-hidden bg-[var(--sf-bg-1)] px-4 py-4 sm:py-6">
+      <div className="sf-atmosphere" aria-hidden="true" />
+      <div className="sf-noise" aria-hidden="true" />
+
+      <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col overflow-hidden">
         {/* Header */}
         <header className="mb-4 shrink-0 text-center">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -49,12 +52,12 @@ export function App() {
           </div>
         </header>
 
-        {/* Main card — fills remaining space */}
+        {/* Main card fills remaining space */}
         <main
           className="
             flex flex-1 flex-col overflow-hidden
-            rounded-2xl border border-[#1A1A1A] bg-[#0F0F0F]
-            p-4 shadow-2xl shadow-black/40
+            rounded-2xl border border-[color:var(--sf-border)] bg-[color:var(--sf-panel)]/95 backdrop-blur-sm
+            p-4 shadow-[var(--sf-shadow-soft)]
             sm:p-6
           "
         >
@@ -66,10 +69,10 @@ export function App() {
           </div>
 
           <div className="flex flex-1 flex-col gap-4 overflow-hidden">
-            {/* Upload zone — always visible when idle */}
+            {/* Upload zone always visible when idle */}
             {isIdle && <DropZone />}
 
-            {/* Options bar — visible once files are loaded */}
+            {/* Options bar visible once files are loaded */}
             {hasFiles && !isError && (
               <OptionsBar onGenerate={startConversion} />
             )}
@@ -77,7 +80,7 @@ export function App() {
             {/* Progress indicator */}
             {isProcessing && <ProgressIndicator />}
 
-            {/* Preview grid — scrollable within its bounds */}
+            {/* Preview grid scrollable within its bounds */}
             {(isProcessing || isDone) && (
               <section aria-label="Slide previews" className="min-h-0 flex-1 overflow-hidden">
                 <PreviewGrid />
@@ -86,7 +89,7 @@ export function App() {
 
             {/* Download button */}
             {isDone && (
-              <div className="flex shrink-0 justify-center pt-1">
+              <div className="flex shrink-0 justify-center pt-1 sf-fade-up">
                 <DownloadButton />
               </div>
             )}
@@ -104,7 +107,7 @@ export function App() {
         </footer>
       </div>
 
-      {/* Slide preview modal — renders as overlay when a slide is selected */}
+      {/* Slide preview modal renders as overlay when a slide is selected */}
       <SlidePreviewModal />
     </div>
   );

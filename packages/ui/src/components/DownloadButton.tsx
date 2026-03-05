@@ -23,19 +23,25 @@ export function DownloadButton() {
 
   return (
     <div className="flex flex-col items-center gap-3">
+      <div className="sf-success-reveal inline-flex items-center gap-2 rounded-full border border-[#29C778]/40 bg-[#29C778]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#8DE1B4]">
+        <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[#29C778]" aria-hidden="true" />
+        Presentation ready
+      </div>
+
       <a
         href={downloadUrl}
         download={filename}
         aria-label={`Download ${filename}`}
         className="
-          inline-flex h-12 items-center gap-2.5 rounded-xl px-8 cursor-pointer
+          sf-fade-up inline-flex h-12 items-center gap-2.5 rounded-xl px-8 cursor-pointer
           text-base font-semibold
           bg-[#E2B714] text-[#0D0D0D]
           transition-all duration-150
-          hover:bg-[#F0C832] hover:shadow-lg hover:shadow-[#E2B714]/15 hover:scale-[1.02]
+          hover:bg-[#F0C832] hover:shadow-[var(--sf-shadow-accent)] hover:scale-[1.02]
           active:bg-[#D4A90F]
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
         "
+        style={{ animationDelay: '80ms' }}
       >
         <svg
           className="h-5 w-5"
@@ -58,12 +64,13 @@ export function DownloadButton() {
         type="button"
         onClick={reset}
         className="
-          text-sm text-[#AAAAAA] underline underline-offset-2 decoration-[#444444] cursor-pointer
+          sf-fade-up text-sm text-[#AAAAAA] underline underline-offset-2 decoration-[#444444] cursor-pointer
           transition-all duration-150
           hover:text-white hover:decoration-[#666666] hover:bg-[#1A1A1A] hover:shadow-sm hover:shadow-black/20 hover:scale-[1.02]
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
           rounded px-2 py-1
         "
+        style={{ animationDelay: '120ms' }}
         aria-label="Start over with a new file"
       >
         Start over

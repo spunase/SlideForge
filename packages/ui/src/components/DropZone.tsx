@@ -33,6 +33,8 @@ const ACCEPTED_MIME_TYPES = [
   'font/woff2',
 ];
 
+type DragIntent = 'neutral' | 'ready' | 'invalid';
+
 function getFileExtension(filename: string): string {
   const dotIndex = filename.lastIndexOf('.');
   return dotIndex >= 0 ? filename.slice(dotIndex).toLowerCase() : '';
@@ -82,10 +84,50 @@ function formatSelectionLabel(count: number, firstName: string): string {
   return `${count} files selected`;
 }
 
+function evaluateDragIntent(items: DataTransferItemList): DragIntent {
+  const dataItems = Array.from(items).filter((item) => item.kind === 'file');
+  if (dataItems.length === 0) {
+    return 'invalid';
+  }
+
+  let hasPrimary = false;
+  let hasKnownValid = false;
+  let hasUnknown = false;
+
+  for (const item of dataItems) {
+    const type = item.type.toLowerCase();
+
+    if (type === 'text/html' || type === 'application/zip' || type === 'application/x-zip-compressed') {
+      hasPrimary = true;
+      break;
+    }
+
+    if (type.length === 0) {
+      hasUnknown = true;
+      continue;
+    }
+
+    if (ACCEPTED_MIME_TYPES.includes(type)) {
+      hasKnownValid = true;
+    }
+  }
+
+  if (hasPrimary || hasUnknown) {
+    return 'ready';
+  }
+
+  if (hasKnownValid) {
+    return 'invalid';
+  }
+
+  return 'invalid';
+}
+
 export function DropZone() {
   const setFiles = useConversionStore((s) => s.setFiles);
   const setError = useConversionStore((s) => s.setError);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [dragIntent, setDragIntent] = useState<DragIntent>('neutral');
   const [validationError, setValidationError] = useState<string | null>(null);
   const [droppedFile, setDroppedFile] = useState<{
     name: string;
@@ -93,6 +135,7 @@ export function DropZone() {
     count: number;
   } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dragDepthRef = useRef(0);
 
   const handleFiles = useCallback(
     (fileList: FileList | File[]) => {
@@ -111,7 +154,7 @@ export function DropZone() {
       }
 
       if (!validFiles.some(isPrimaryFile)) {
-        setValidationError('Upload at least one .html/.htm file (or a .zip bundle).');
+        setValidationError('Upload at least one .html/.htm file or a .zip bundle.');
         setDroppedFile(null);
         return;
       }
@@ -136,23 +179,41 @@ export function DropZone() {
     [setFiles, setError],
   );
 
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragDepthRef.current += 1;
+    setIsDragOver(true);
+    setDragIntent(evaluateDragIntent(e.dataTransfer.items));
+  }, []);
+
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragOver(true);
-  }, []);
+    if (!isDragOver) {
+      setIsDragOver(true);
+    }
+    setDragIntent(evaluateDragIntent(e.dataTransfer.items));
+  }, [isDragOver]);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragOver(false);
+    dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
+
+    if (dragDepthRef.current === 0) {
+      setIsDragOver(false);
+      setDragIntent('neutral');
+    }
   }, []);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
+      dragDepthRef.current = 0;
       setIsDragOver(false);
+      setDragIntent('neutral');
 
       const droppedFiles = e.dataTransfer.files;
       if (droppedFiles.length > 0) {
@@ -186,11 +247,22 @@ export function DropZone() {
     [openFilePicker],
   );
 
+  const dragClass = isDragOver
+    ? dragIntent === 'invalid'
+      ? 'border-2 border-[#FF5D5D] bg-[#FF5D5D]/8 shadow-[0_10px_24px_rgba(255,93,93,0.12)]'
+      : 'border-2 border-[#E2B714] bg-[#E2B714]/8 shadow-[var(--sf-shadow-accent)] scale-[1.01]'
+    : droppedFile && !validationError
+      ? 'border-2 border-[#333333] bg-[#1A1A1A] hover:border-[#4A4A4A] hover:bg-[#202020]'
+      : 'border-2 border-dashed border-[#555555] bg-[#111111] hover:border-[#777777] hover:bg-[#151515] hover:scale-[1.01] hover:shadow-[var(--sf-shadow-soft)]';
+
+  const showDragMessage = isDragOver;
+
   return (
     <div
       role="button"
       tabIndex={0}
       aria-label="Upload HTML file"
+      onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -199,15 +271,9 @@ export function DropZone() {
       className={`
         group relative flex flex-col items-center justify-center
         w-full flex-1 min-h-[120px] rounded-xl p-6
-        transition-all duration-200 ease-out cursor-pointer
+        transition-all duration-200 ease-[var(--sf-ease-standard)] cursor-pointer
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
-        ${
-          isDragOver
-            ? 'border-2 border-[#E2B714] bg-[#E2B714]/5'
-            : droppedFile && !validationError
-              ? 'border-2 border-[#333333] bg-[#1A1A1A] hover:border-[#4A4A4A] hover:bg-[#202020]'
-              : 'border-2 border-dashed border-[#555555] bg-[#111111] hover:border-[#777777] hover:bg-[#151515] hover:scale-[1.01] hover:shadow-lg hover:shadow-[#E2B714]/5'
-        }
+        ${dragClass}
       `}
     >
       <input
@@ -221,7 +287,45 @@ export function DropZone() {
         aria-hidden="true"
       />
 
-      {validationError ? (
+      {showDragMessage ? (
+        <div className="flex flex-col items-center gap-2 text-center sf-fade-up">
+          <div className={`flex h-10 w-10 items-center justify-center rounded-full ${dragIntent === 'invalid' ? 'bg-[#FF5D5D]/12' : 'bg-[#E2B714]/12'}`}>
+            {dragIntent === 'invalid' ? (
+              <svg
+                className="h-5 w-5 text-[#FF7B7B]"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0 3.75h.008M4.5 12a7.5 7.5 0 1115 0 7.5 7.5 0 01-15 0z" />
+              </svg>
+            ) : (
+              <svg
+                className="h-5 w-5 text-[#E2B714]"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7 12.75l3 3 7.5-7.5" />
+              </svg>
+            )}
+          </div>
+          <p className={`text-sm font-medium ${dragIntent === 'invalid' ? 'text-[#FF8F8F]' : 'text-[#F6DEA4]'}`}>
+            {dragIntent === 'invalid'
+              ? 'Add at least one HTML file or ZIP bundle'
+              : 'Release to import files'}
+          </p>
+          <p className="text-xs text-[#9D9D9D]">
+            {dragIntent === 'invalid'
+              ? 'Styles and assets are accepted, but one primary input is required.'
+              : 'HTML, CSS, image, font, and JS assets are supported.'}
+          </p>
+        </div>
+      ) : validationError ? (
         <div className="flex flex-col items-center gap-2 text-center">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF4D4D]/10">
             <svg
@@ -288,7 +392,7 @@ export function DropZone() {
               Drop your HTML file here
             </p>
             <p className="text-xs text-[#999999] mt-0.5">
-              or click to browse — HTML plus CSS/image/font assets
+              or click to browse - HTML plus CSS/image/font assets
             </p>
           </div>
         </div>

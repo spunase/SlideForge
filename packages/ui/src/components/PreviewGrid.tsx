@@ -1,11 +1,35 @@
 import { useConversionStore } from '../store';
 import { SlidePreviewRenderer } from './SlidePreviewRenderer';
 
+const SKELETON_COUNT = 6;
+
 export function PreviewGrid() {
   const slides = useConversionStore((s) => s.slides);
   const mappedSlides = useConversionStore((s) => s.mappedSlides);
   const slideSize = useConversionStore((s) => s.slideSize);
+  const status = useConversionStore((s) => s.status);
   const setSelectedSlideIndex = useConversionStore((s) => s.setSelectedSlideIndex);
+
+  const isProcessing = status === 'parsing' || status === 'converting';
+
+  if (slides.length === 0 && isProcessing) {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        aria-label="Generating slide previews"
+        className="grid h-full grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3"
+      >
+        {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+          <div
+            key={`skeleton-${index}`}
+            className="sf-skeleton aspect-video rounded-lg"
+            aria-hidden="true"
+          />
+        ))}
+      </div>
+    );
+  }
 
   if (slides.length === 0) {
     return (
@@ -49,7 +73,7 @@ export function PreviewGrid() {
               group relative aspect-video overflow-hidden rounded-lg
               bg-[#1A1A1A] border border-[#2A2A2A]
               transition-all duration-150
-              hover:border-[#444444] hover:shadow-lg hover:shadow-black/20 hover:scale-[1.01]
+              hover:border-[#444444] hover:shadow-[var(--sf-shadow-soft)] hover:scale-[1.01]
               cursor-pointer
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
             "

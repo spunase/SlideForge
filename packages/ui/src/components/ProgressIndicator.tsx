@@ -1,4 +1,46 @@
+import { useMemo } from 'react';
 import { useConversionStore } from '../store';
+
+const STAGES = [
+  { id: 'ingest', label: 'Ingest' },
+  { id: 'render', label: 'Render' },
+  { id: 'extract', label: 'Extract' },
+  { id: 'analyze', label: 'Analyze' },
+  { id: 'build', label: 'Build' },
+  { id: 'package', label: 'Package' },
+  { id: 'report', label: 'Report' },
+] as const;
+
+function normalizeStageName(stage: string | null): string | null {
+  if (!stage) {
+    return null;
+  }
+
+  const normalized = stage.toLowerCase().replace('self-check:', '').trim();
+
+  for (const s of STAGES) {
+    if (normalized.includes(s.id)) {
+      return s.id;
+    }
+  }
+
+  return null;
+}
+
+function formatStageLabel(stage: string | null, isDone: boolean): string {
+  if (isDone) {
+    return 'Done';
+  }
+
+  if (!stage) {
+    return 'Preparing';
+  }
+
+  return stage
+    .replace('self-check:', '')
+    .replace(/-/g, ' ')
+    .trim();
+}
 
 export function ProgressIndicator() {
   const progress = useConversionStore((s) => s.progress);
@@ -7,12 +49,39 @@ export function ProgressIndicator() {
 
   const isActive = status === 'parsing' || status === 'converting';
   const isDone = status === 'done';
+  const normalizedStage = normalizeStageName(currentStage);
 
-  const stageLabel = isDone ? 'Done!' : currentStage ?? 'Preparing...';
+  const activeIndex = useMemo(
+    () => STAGES.findIndex((stage) => stage.id === normalizedStage),
+    [normalizedStage],
+  );
+
+  const stageLabel = formatStageLabel(currentStage, isDone);
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Progress bar */}
+      <div className="flex flex-wrap items-center gap-1.5" aria-hidden="true">
+        {STAGES.map((stage, index) => {
+          const state = isDone
+            ? 'done'
+            : index < activeIndex
+              ? 'done'
+              : index === activeIndex && isActive
+                ? 'active'
+                : 'pending';
+
+          return (
+            <span
+              key={stage.id}
+              data-state={state}
+              className="sf-progress-chip rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide"
+            >
+              {stage.label}
+            </span>
+          );
+        })}
+      </div>
+
       <div className="relative w-full overflow-hidden rounded-full bg-[#1A1A1A] h-1.5">
         <div
           role="progressbar"
@@ -20,12 +89,11 @@ export function ProgressIndicator() {
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label={`Conversion progress: ${progress}%`}
-          className="h-full rounded-full bg-[#E2B714] transition-all duration-300 ease-out"
+          className="h-full rounded-full bg-[#E2B714] transition-all duration-300 ease-[var(--sf-ease-standard)]"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      {/* Stage indicator */}
       <div
         className="flex items-center gap-2"
         aria-live="polite"
@@ -39,7 +107,7 @@ export function ProgressIndicator() {
         )}
         {isDone && (
           <svg
-            className="h-4 w-4 text-[#23C16B]"
+            className="h-4 w-4 text-[#23C16B] sf-success-reveal"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -50,7 +118,7 @@ export function ProgressIndicator() {
           </svg>
         )}
         <span
-          className={`text-sm ${isDone ? 'font-medium text-[#23C16B]' : 'text-[#AAAAAA]'}`}
+          className={`text-sm capitalize ${isDone ? 'font-medium text-[#23C16B]' : 'text-[#AAAAAA]'}`}
         >
           {stageLabel}
         </span>

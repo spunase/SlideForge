@@ -2,15 +2,183 @@
 @source "./**/*.{ts,tsx}";
 @source "../../../packages/ui/src/**/*.{ts,tsx}";
 
+:root {
+  --sf-bg-0: #090909;
+  --sf-bg-1: #0d0d0d;
+  --sf-bg-2: #121212;
+  --sf-panel: #101010;
+  --sf-panel-elevated: #171717;
+  --sf-border: #262626;
+  --sf-border-strong: #3b3b3b;
+  --sf-text: #f5f5f5;
+  --sf-text-muted: #9d9d9d;
+  --sf-accent: #e2b714;
+  --sf-success: #29c778;
+  --sf-danger: #ff5d5d;
+  --sf-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --sf-dur-fast: 140ms;
+  --sf-dur-mid: 220ms;
+  --sf-dur-slow: 320ms;
+  --sf-shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.28);
+  --sf-shadow-accent: 0 10px 30px rgba(226, 183, 20, 0.16);
+}
+
 html, body, #root {
   height: 100%;
   overflow: hidden;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: #0D0D0D;
-  color: #FFFFFF;
+  font-family: "SF Pro Text", "Avenir Next", "Helvetica Neue", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(226, 183, 20, 0.12), transparent 34%),
+    radial-gradient(circle at 86% 88%, rgba(129, 170, 255, 0.08), transparent 32%),
+    linear-gradient(180deg, var(--sf-bg-2), var(--sf-bg-1) 36%, var(--sf-bg-0));
+  color: var(--sf-text);
   margin: 0;
   padding: 0;
+}
+
+.sf-atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sf-atmosphere::before,
+.sf-atmosphere::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(48px);
+  opacity: 0.48;
+  transform: translate3d(0, 0, 0);
+  animation: sf-drift 24s var(--sf-ease-standard) infinite alternate;
+}
+
+.sf-atmosphere::before {
+  width: 360px;
+  height: 360px;
+  left: -120px;
+  top: -96px;
+  background: rgba(226, 183, 20, 0.16);
+}
+
+.sf-atmosphere::after {
+  width: 280px;
+  height: 280px;
+  right: -72px;
+  bottom: -104px;
+  background: rgba(85, 142, 255, 0.12);
+  animation-duration: 30s;
+}
+
+.sf-noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 0.8px, transparent 0.8px);
+  background-size: 3px 3px;
+  opacity: 0.1;
+}
+
+.sf-fade-up {
+  animation: sf-fade-up var(--sf-dur-slow) var(--sf-ease-standard) both;
+}
+
+.sf-success-reveal {
+  animation: sf-bloom var(--sf-dur-mid) var(--sf-ease-standard) both;
+}
+
+.sf-progress-chip {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  color: #9f9f9f;
+  transition:
+    border-color var(--sf-dur-fast) var(--sf-ease-standard),
+    color var(--sf-dur-fast) var(--sf-ease-standard),
+    background-color var(--sf-dur-fast) var(--sf-ease-standard),
+    transform var(--sf-dur-fast) var(--sf-ease-standard);
+}
+
+.sf-progress-chip[data-state="active"] {
+  border-color: rgba(226, 183, 20, 0.5);
+  background: rgba(226, 183, 20, 0.14);
+  color: #f6dea4;
+  transform: translateY(-1px);
+}
+
+.sf-progress-chip[data-state="done"] {
+  border-color: rgba(41, 199, 120, 0.34);
+  background: rgba(41, 199, 120, 0.12);
+  color: #8de1b4;
+}
+
+.sf-skeleton {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(160deg, #1a1a1a, #141414);
+}
+
+.sf-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 48%,
+    transparent 100%
+  );
+  animation: sf-shimmer 1.3s linear infinite;
+}
+
+@keyframes sf-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(8px, -10px, 0) scale(1.03);
+  }
+}
+
+@keyframes sf-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes sf-bloom {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sf-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-atmosphere::before,
+  .sf-atmosphere::after,
+  .sf-fade-up,
+  .sf-success-reveal,
+  .sf-skeleton::after {
+    animation: none !important;
+  }
 }
