@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="httpshttps://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Website Traffic Dashboard</h1>
+            <div class="time-range">
+                <span>Last 30 Days</span>
+                <i class="material-icons">arrow_drop_down</i>
+            </div>
+        </header>
+
+        <main>
+            <section class="kpis">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Unique Visitors</h2>
+                        <i class="material-icons">people</i>
+                    </div>
+                    <div class="card-body">
+                        <p>12,345</p>
+                        <span class="trend up">+5.2%</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Page Views</h2>
+                        <i class="material-icons">visibility</i>
+                    </div>
+                    <div class="card-body">
+                        <p>45,678</p>
+                        <span class="trend down">-2.1%</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Bounce Rate</h2>
+                        <i class="material-icons">trending_down</i>
+                    </div>
+                    <div class="card-body">
+                        <p>42.5%</p>
+                        <span class="trend up">+1.5%</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Avg. Session Duration</h2>
+                        <i class="material-icons">timer</i>
+                    </div>
+                    <div class="card-body">
+                        <p>5m 23s</p>
+                        <span class="trend down">-0.8%</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="charts">
+                <div class="card chart">
+                    <div class="card-header">
+                        <h2>Traffic Sources</h2>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="trafficSourcesChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Top Pages</h2>
+                    </div>
+                    <div class="card-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Page</th>
+                                    <th>Views</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>/</td>
+                                    <td>10,123</td>
+                                </tr>
+                                <tr>
+                                    <td>/about</td>
+                                    <td>5,432</td>
+                                </tr>
+                                <tr>
+                                    <td>/products</td>
+                                    <td>3,210</td>
+                                </tr>
+                                <tr>
+                                    <td>/contact</td>
+                                    <td>1,890</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const trafficSourcesCtx = document.getElementById('trafficSourcesChart').getContext('2d');
+        new Chart(trafficSourcesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Organic', 'Social', 'Referral', 'Direct'],
+                datasets: [{
+                    label: 'Sessions',
+                    data: [5000, 2500, 1500, 1000],
+                    backgroundColor: [
+                        'rgba(66, 133, 244, 0.8)',
+                        'rgba(219, 68, 55, 0.8)',
+                        'rgba(244, 180, 0, 0.8)',
+                        'rgba(15, 157, 88, 0.8)'
+                    ],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#eee'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
