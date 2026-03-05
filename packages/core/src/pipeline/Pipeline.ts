@@ -123,6 +123,7 @@ export class Pipeline {
       return {
         blob: packageResult.blob,
         report,
+        mappedShapes: analyzeResult.slides,
       };
     } catch (error: unknown) {
       // Build an error report instead of crashing
@@ -161,6 +162,7 @@ export class Pipeline {
       return {
         blob: new Blob([]),
         report,
+        mappedShapes: [],
       };
     }
   }

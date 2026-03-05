@@ -4,3 +4,5 @@ export { OptionsBar } from './OptionsBar';
 export { ProgressIndicator } from './ProgressIndicator';
 export { DownloadButton } from './DownloadButton';
 export { ErrorDisplay } from './ErrorDisplay';
+export { SlidePreviewRenderer } from './SlidePreviewRenderer';
+export { SlidePreviewModal } from './SlidePreviewModal';

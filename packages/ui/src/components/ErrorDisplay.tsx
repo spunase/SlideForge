@@ -38,7 +38,7 @@ export function ErrorDisplay() {
           <p className="text-sm font-semibold text-[#FF4D4D]">
             Error: {error.code}
           </p>
-          <p className="text-sm text-[#AAAAAA] leading-relaxed">
+          <p className="text-sm text-[#CCCCCC] leading-relaxed">
             {error.message}
           </p>
         </div>
@@ -52,7 +52,7 @@ export function ErrorDisplay() {
           text-sm font-medium
           border border-[#FF4D4D]/30 text-[#FF4D4D]
           transition-all duration-150
-          hover:bg-[#FF4D4D]/10 hover:border-[#FF4D4D]/50
+          hover:bg-[#FF4D4D]/10 hover:border-[#FF4D4D]/50 hover:shadow-md hover:shadow-[#FF4D4D]/10 hover:scale-[1.02]
           active:bg-[#FF4D4D]/15
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4D4D] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
         "

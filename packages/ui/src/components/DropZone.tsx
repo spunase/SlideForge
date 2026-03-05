@@ -116,8 +116,8 @@ export function DropZone() {
       onClick={openFilePicker}
       onKeyDown={handleKeyDown}
       className={`
-        relative flex flex-col items-center justify-center
-        w-full min-h-[200px] rounded-xl p-8
+        group relative flex flex-col items-center justify-center
+        w-full flex-1 min-h-[120px] rounded-xl p-6
         transition-all duration-200 ease-out cursor-pointer
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
         ${
@@ -125,7 +125,7 @@ export function DropZone() {
             ? 'border-2 border-[#E2B714] bg-[#E2B714]/5'
             : droppedFile && !validationError
               ? 'border-2 border-[#333333] bg-[#1A1A1A]'
-              : 'border-2 border-dashed border-[#444444] bg-[#111111] hover:border-[#666666] hover:bg-[#151515]'
+              : 'border-2 border-dashed border-[#555555] bg-[#111111] hover:border-[#777777] hover:bg-[#151515] hover:scale-[1.01] hover:shadow-lg hover:shadow-[#E2B714]/5'
         }
       `}
     >
@@ -140,10 +140,10 @@ export function DropZone() {
       />
 
       {validationError ? (
-        <div className="flex flex-col items-center gap-3 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FF4D4D]/10">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF4D4D]/10">
             <svg
-              className="h-6 w-6 text-[#FF4D4D]"
+              className="h-5 w-5 text-[#FF6B6B]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -153,16 +153,16 @@ export function DropZone() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-          <p className="text-sm text-[#FF4D4D]" role="alert">
+          <p className="text-sm text-[#FF6B6B]" role="alert">
             {validationError}
           </p>
-          <p className="text-xs text-[#AAAAAA]">Click or drop a valid file to try again</p>
+          <p className="text-xs text-[#999999]">Click or drop a valid file to try again</p>
         </div>
       ) : droppedFile ? (
-        <div className="flex flex-col items-center gap-3 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#23C16B]/10">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#23C16B]/10">
             <svg
-              className="h-6 w-6 text-[#23C16B]"
+              className="h-5 w-5 text-[#2DD881]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -174,15 +174,15 @@ export function DropZone() {
           </div>
           <div>
             <p className="text-sm font-medium text-white">{droppedFile.name}</p>
-            <p className="text-xs text-[#AAAAAA]">{formatFileSize(droppedFile.size)}</p>
+            <p className="text-xs text-[#999999]">{formatFileSize(droppedFile.size)}</p>
           </div>
-          <p className="text-xs text-[#AAAAAA]">Click or drop another file to replace</p>
+          <p className="text-xs text-[#999999]">Click or drop another file to replace</p>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#1A1A1A]">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1A1A1A]">
             <svg
-              className="h-6 w-6 text-[#AAAAAA]"
+              className="h-5 w-5 text-[#999999] transition-transform duration-200 group-hover:-translate-y-0.5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -200,7 +200,7 @@ export function DropZone() {
             <p className="text-sm font-medium text-white">
               Drop your HTML file here
             </p>
-            <p className="text-xs text-[#AAAAAA] mt-1">
+            <p className="text-xs text-[#999999] mt-0.5">
               or click to browse — accepts .html, .htm, .zip
             </p>
           </div>

@@ -78,8 +78,8 @@ export function OptionsBar({ onGenerate }: { onGenerate: () => void }) {
             className="
               h-9 rounded-lg border border-[#333333] bg-[#1A1A1A] px-3
               text-sm text-white
-              transition-colors duration-150
-              hover:border-[#444444]
+              transition-all duration-150
+              hover:border-[#444444] hover:bg-[#222222] hover:ring-1 hover:ring-[#E2B714]/20
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]
               appearance-none cursor-pointer
             "
@@ -111,13 +111,13 @@ export function OptionsBar({ onGenerate }: { onGenerate: () => void }) {
                 className="
                   h-9 w-24 rounded-lg border border-[#333333] bg-[#1A1A1A] px-3
                   text-sm text-white font-mono
-                  transition-colors duration-150
-                  hover:border-[#444444]
+                  transition-all duration-150
+                  hover:border-[#444444] hover:bg-[#222222] hover:ring-1 hover:ring-[#E2B714]/20
                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]
                 "
               />
             </div>
-            <span className="pb-1.5 text-sm text-[#666666]" aria-hidden="true">&times;</span>
+            <span className="pb-1.5 text-sm text-[#999999]" aria-hidden="true">&times;</span>
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="custom-height"
@@ -134,8 +134,8 @@ export function OptionsBar({ onGenerate }: { onGenerate: () => void }) {
                 className="
                   h-9 w-24 rounded-lg border border-[#333333] bg-[#1A1A1A] px-3
                   text-sm text-white font-mono
-                  transition-colors duration-150
-                  hover:border-[#444444]
+                  transition-all duration-150
+                  hover:border-[#444444] hover:bg-[#222222] hover:ring-1 hover:ring-[#E2B714]/20
                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]
                 "
               />
@@ -155,7 +155,7 @@ export function OptionsBar({ onGenerate }: { onGenerate: () => void }) {
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]
           disabled:cursor-not-allowed disabled:opacity-40
           bg-[#E2B714] text-[#0D0D0D]
-          hover:bg-[#F0C832] hover:shadow-lg hover:shadow-[#E2B714]/10
+          hover:bg-[#F0C832] hover:shadow-lg hover:shadow-[#E2B714]/10 hover:scale-[1.02]
           active:bg-[#D4A90F]
         "
         aria-label={isConverting ? 'Conversion in progress' : 'Generate PowerPoint presentation'}

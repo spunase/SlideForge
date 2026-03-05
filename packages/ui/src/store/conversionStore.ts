@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { MappedShape } from '@core/types';
 
 interface ConversionError {
   code: string;
@@ -18,6 +19,8 @@ interface SlideSize {
 export interface ConversionStore {
   files: Map<string, Blob>;
   slides: Array<SlidePreview>;
+  mappedSlides: MappedShape[][];
+  selectedSlideIndex: number | null;
   status: 'idle' | 'parsing' | 'converting' | 'done' | 'error';
   progress: number;
   currentStage: string | null;
@@ -27,6 +30,8 @@ export interface ConversionStore {
 
   setFiles: (files: Map<string, Blob>) => void;
   addSlidePreview: (preview: string, index: number) => void;
+  setMappedSlides: (slides: MappedShape[][]) => void;
+  setSelectedSlideIndex: (index: number | null) => void;
   setStatus: (status: ConversionStore['status']) => void;
   setProgress: (progress: number) => void;
   setStage: (stage: string | null) => void;
@@ -39,6 +44,8 @@ export interface ConversionStore {
 const initialState = {
   files: new Map<string, Blob>(),
   slides: [] as Array<SlidePreview>,
+  mappedSlides: [] as MappedShape[][],
+  selectedSlideIndex: null as number | null,
   status: 'idle' as const,
   progress: 0,
   currentStage: null as string | null,
@@ -59,6 +66,10 @@ export const useConversionStore = create<ConversionStore>((set) => ({
       ),
     })),
 
+  setMappedSlides: (slides) => set({ mappedSlides: slides }),
+
+  setSelectedSlideIndex: (index) => set({ selectedSlideIndex: index }),
+
   setStatus: (status) => set({ status }),
 
   setProgress: (progress) => set({ progress: Math.min(100, Math.max(0, progress)) }),
@@ -76,5 +87,7 @@ export const useConversionStore = create<ConversionStore>((set) => ({
       ...initialState,
       files: new Map<string, Blob>(),
       slides: [],
+      mappedSlides: [],
+      selectedSlideIndex: null,
     }),
 }));

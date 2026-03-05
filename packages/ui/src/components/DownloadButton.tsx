@@ -32,7 +32,7 @@ export function DownloadButton() {
           text-base font-semibold
           bg-[#E2B714] text-[#0D0D0D]
           transition-all duration-150
-          hover:bg-[#F0C832] hover:shadow-lg hover:shadow-[#E2B714]/15
+          hover:bg-[#F0C832] hover:shadow-lg hover:shadow-[#E2B714]/15 hover:scale-[1.02]
           active:bg-[#D4A90F]
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
         "
@@ -59,8 +59,8 @@ export function DownloadButton() {
         onClick={reset}
         className="
           text-sm text-[#AAAAAA] underline underline-offset-2 decoration-[#444444]
-          transition-colors duration-150
-          hover:text-white hover:decoration-[#666666]
+          transition-all duration-150
+          hover:text-white hover:decoration-[#666666] hover:bg-[#1A1A1A] hover:shadow-sm hover:shadow-black/20 hover:scale-[1.02]
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
           rounded px-2 py-1
         "

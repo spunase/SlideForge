@@ -55,7 +55,7 @@ export function ProgressIndicator() {
           {stageLabel}
         </span>
         {isActive && (
-          <span className="text-xs text-[#666666] ml-auto tabular-nums">
+          <span className="text-xs text-[#999999] ml-auto tabular-nums">
             {progress}%
           </span>
         )}
