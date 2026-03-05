@@ -1,7 +1,22 @@
 import { useCallback, useRef } from 'react';
-import { convert } from '@slideforge/core';
-import type { ConversionOptions, ProgressInfo } from '@slideforge/core';
+import { convert } from '@core/convert';
+import { runSelfCheckWithAutoFix } from '@core/selfCheck';
+import type { ConversionOptions, ProgressInfo, SelfCheckIssue } from '@core/types';
 import { useConversionStore } from '../store';
+
+const SELF_CHECK_FIXTURE_URL = '/fixtures/apple-fidelity-test.html';
+
+function summarizeSelfCheckIssues(issues: SelfCheckIssue[]): string {
+  if (issues.length === 0) {
+    return 'Self-check failed for an unknown reason.';
+  }
+
+  const topIssues = issues
+    .slice(0, 3)
+    .map((issue) => `${issue.code}: ${issue.message}`);
+
+  return `Self-check failed: ${topIssues.join(' | ')}`;
+}
 
 export function useConversion() {
   const files = useConversionStore((s) => s.files);
@@ -11,6 +26,8 @@ export function useConversion() {
   const setStage = useConversionStore((s) => s.setStage);
   const setDownloadUrl = useConversionStore((s) => s.setDownloadUrl);
   const setError = useConversionStore((s) => s.setError);
+  const setMappedSlides = useConversionStore((s) => s.setMappedSlides);
+  const addSlidePreview = useConversionStore((s) => s.addSlidePreview);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -57,6 +74,12 @@ export function useConversion() {
     try {
       const result = await convert(htmlString, files, options, onProgress, controller.signal);
 
+      // Store mapped shapes for browser preview
+      setMappedSlides(result.mappedShapes);
+      for (let i = 0; i < result.mappedShapes.length; i++) {
+        addSlidePreview('', i);
+      }
+
       // Create a downloadable blob URL from the result
       const url = URL.createObjectURL(result.blob);
       setDownloadUrl(url);
@@ -77,7 +100,92 @@ export function useConversion() {
     } finally {
       abortControllerRef.current = null;
     }
-  }, [files, slideSize, setStatus, setProgress, setStage, setDownloadUrl, setError]);
+  }, [files, slideSize, setStatus, setProgress, setStage, setDownloadUrl, setError, setMappedSlides, addSlidePreview]);
+
+  const runSelfCheck = useCallback(async () => {
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    setStatus('converting');
+    setProgress(0);
+    setStage('self-check');
+    setError(null);
+
+    const onProgress = (info: ProgressInfo) => {
+      setProgress(info.progress);
+      setStage(`self-check:${info.stage}`);
+    };
+
+    try {
+      const response = await fetch(SELF_CHECK_FIXTURE_URL, {
+        signal: controller.signal,
+        cache: 'no-store',
+      });
+      if (!response.ok) {
+        throw new Error(`Self-check fixture could not be loaded (${response.status}).`);
+      }
+
+      const fixtureHtml = await response.text();
+      const fixtureAssets = new Map<string, Blob>();
+      fixtureAssets.set(
+        'apple-fidelity-test.html',
+        new Blob([fixtureHtml], { type: 'text/html' }),
+      );
+
+      const selfCheck = await runSelfCheckWithAutoFix(
+        fixtureHtml,
+        fixtureAssets,
+        {
+          slideWidth: slideSize.width,
+          slideHeight: slideSize.height,
+        },
+        undefined,
+        onProgress,
+        controller.signal,
+      );
+
+      if (!selfCheck.passed || !selfCheck.result) {
+        setError({
+          code: 'SELF_CHECK_FAILED',
+          message: summarizeSelfCheckIssues(selfCheck.issues),
+        });
+        setStatus('error');
+        return;
+      }
+
+      const url = URL.createObjectURL(selfCheck.result.blob);
+      setDownloadUrl(url);
+      setProgress(100);
+
+      if (selfCheck.fixesApplied.length > 0) {
+        setStage(`self-check: passed with ${selfCheck.fixesApplied.length} auto-fix(es)`);
+      } else {
+        setStage('self-check: passed');
+      }
+
+      setStatus('done');
+    } catch (err: unknown) {
+      if (controller.signal.aborted) {
+        setStatus('idle');
+        setProgress(0);
+        setStage(null);
+        return;
+      }
+
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'An unknown error occurred during self-check.';
+
+      setError({
+        code: 'SELF_CHECK_ERROR',
+        message,
+      });
+      setStatus('error');
+    } finally {
+      abortControllerRef.current = null;
+    }
+  }, [slideSize.height, slideSize.width, setStatus, setProgress, setStage, setError, setDownloadUrl]);
 
   const cancelConversion = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -86,5 +194,5 @@ export function useConversion() {
     setStage(null);
   }, [setStatus, setProgress, setStage]);
 
-  return { startConversion, cancelConversion };
+  return { startConversion, cancelConversion, runSelfCheck };
 }

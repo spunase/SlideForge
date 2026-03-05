@@ -21,4 +21,9 @@ export type {
   ConversionMetrics,
   ProgressInfo,
   ExtractedElement,
+  SelfCheckExpectations,
+  SelfCheckFixStrategy,
+  SelfCheckFix,
+  SelfCheckIssue,
+  SelfCheckResult,
 } from './conversion';

@@ -2,7 +2,7 @@
  * Pipeline and report types for the HTML-to-PPTX conversion process.
  */
 
-import type { ConversionWarning, ElementGeometry } from './styles';
+import type { ConversionWarning, ElementGeometry, MappedShape } from './styles';
 
 export interface ConversionOptions {
   slideWidth: number;        // pixels (default 1920)
@@ -12,6 +12,39 @@ export interface ConversionOptions {
 export interface ConversionResult {
   blob: Blob;
   report: ConversionReport;
+  mappedShapes: MappedShape[][];
+}
+
+export interface SelfCheckExpectations {
+  minSlides: number;
+  maxCriticalWarnings: number;
+  maxUnsupportedRules: number;
+  requireNonEmptyBlob: boolean;
+  maxTotalTimeMs: number;
+}
+
+export type SelfCheckFixStrategy =
+  | 'normalize-options'
+  | 'sanitize-html'
+  | 'inject-slide-markers';
+
+export interface SelfCheckFix {
+  strategy: SelfCheckFixStrategy;
+  description: string;
+}
+
+export interface SelfCheckIssue {
+  code: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  autoFixable: boolean;
+}
+
+export interface SelfCheckResult {
+  passed: boolean;
+  issues: SelfCheckIssue[];
+  fixesApplied: SelfCheckFix[];
+  result: ConversionResult | null;
 }
 
 export interface ConversionReport {

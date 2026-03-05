@@ -160,11 +160,11 @@ export function build(mappedSlides: MappedShape[][]): BuildResult {
     let shapeId = 2; // Start at 2 (1 is reserved for the group shape)
 
     for (const shape of shapes) {
-      // Determine shape type
+      // Determine shape type.
+      // Image embedding (relationship wiring + media package writes) is Phase 2.
+      // For now, keep image geometry as a rect placeholder to avoid hard failures.
       let shapeType: 'text' | 'image' | 'rect' = 'rect';
-      if (shape.imageUrl) {
-        shapeType = 'image';
-      } else if (shape.textContent && shape.textContent.trim().length > 0) {
+      if (shape.textContent && shape.textContent.trim().length > 0) {
         shapeType = 'text';
       }
 

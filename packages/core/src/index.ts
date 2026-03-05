@@ -5,6 +5,7 @@
  */
 
 export { convert } from './convert';
+export { runSelfCheckWithAutoFix } from './selfCheck';
 
 export type {
   ConversionOptions,
@@ -12,6 +13,17 @@ export type {
   ConversionReport,
   ConversionMetrics,
   ProgressInfo,
+  MappedShape,
+  FillStyle,
+  BorderStyle,
+  ShadowStyle,
+  TextStyle,
+  ElementGeometry,
+  SelfCheckExpectations,
+  SelfCheckFixStrategy,
+  SelfCheckFix,
+  SelfCheckIssue,
+  SelfCheckResult,
 } from './types';
 
 export type { SlideShape, TextRun } from './builders';

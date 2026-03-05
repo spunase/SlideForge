@@ -5,12 +5,13 @@ import { OptionsBar } from '@ui/components/OptionsBar';
 import { ProgressIndicator } from '@ui/components/ProgressIndicator';
 import { DownloadButton } from '@ui/components/DownloadButton';
 import { ErrorDisplay } from '@ui/components/ErrorDisplay';
+import { SlidePreviewModal } from '@ui/components/SlidePreviewModal';
 import { useConversion } from '@ui/hooks/useConversion';
 
 export function App() {
   const status = useConversionStore((s) => s.status);
   const files = useConversionStore((s) => s.files);
-  const { startConversion } = useConversion();
+  const { startConversion, runSelfCheck } = useConversion();
 
   const hasFiles = files.size > 0;
   const isIdle = status === 'idle';
@@ -19,24 +20,42 @@ export function App() {
   const isError = status === 'error';
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] px-4 py-8 sm:py-16">
-      <div className="mx-auto max-w-4xl">
+    <div className="flex h-screen flex-col overflow-hidden bg-[#0D0D0D] px-4 py-4 sm:py-6">
+      <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col overflow-hidden">
         {/* Header */}
-        <header className="mb-10 text-center">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+        <header className="mb-4 shrink-0 text-center">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             <span className="text-[#E2B714]">SlideForge</span>
           </h1>
-          <p className="mt-2 text-sm text-[#AAAAAA] sm:text-base">
+          <p className="mt-1 text-xs text-[#999999] sm:text-sm">
             HTML &rarr; PowerPoint in seconds
           </p>
+          <div className="mt-3">
+            <button
+              type="button"
+              onClick={runSelfCheck}
+              disabled={isProcessing}
+              className="
+                h-9 rounded-lg border border-[#2A2A2A] bg-[#141414] px-4
+                text-xs font-semibold uppercase tracking-wide text-[#E2B714]
+                transition-all duration-150
+                hover:border-[#3B3B3B] hover:bg-[#1A1A1A]
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E2B714] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0D0D]
+                disabled:cursor-not-allowed disabled:opacity-40
+              "
+            >
+              {isProcessing ? 'Self-Check Running...' : 'Run Full Self-Check Fixture'}
+            </button>
+          </div>
         </header>
 
-        {/* Main card */}
+        {/* Main card — fills remaining space */}
         <main
           className="
+            flex flex-1 flex-col overflow-hidden
             rounded-2xl border border-[#1A1A1A] bg-[#0F0F0F]
-            p-6 shadow-2xl shadow-black/40
-            sm:p-8
+            p-4 shadow-2xl shadow-black/40
+            sm:p-6
           "
         >
           {/* Status announcements for screen readers */}
@@ -46,28 +65,28 @@ export function App() {
             {isError && 'An error occurred during conversion.'}
           </div>
 
-          <div className="flex flex-col gap-6">
-            {/* DropZone: visible when idle or when user might want to change file */}
+          <div className="flex flex-1 flex-col gap-4 overflow-hidden">
+            {/* Upload zone — always visible when idle */}
             {isIdle && <DropZone />}
 
-            {/* Options bar: visible once files are loaded */}
+            {/* Options bar — visible once files are loaded */}
             {hasFiles && !isError && (
               <OptionsBar onGenerate={startConversion} />
             )}
 
-            {/* Progress indicator: visible during conversion */}
+            {/* Progress indicator */}
             {isProcessing && <ProgressIndicator />}
 
-            {/* Preview grid: visible during conversion and when done */}
+            {/* Preview grid — scrollable within its bounds */}
             {(isProcessing || isDone) && (
-              <section aria-label="Slide previews">
+              <section aria-label="Slide previews" className="min-h-0 flex-1 overflow-hidden">
                 <PreviewGrid />
               </section>
             )}
 
-            {/* Download button: visible when done */}
+            {/* Download button */}
             {isDone && (
-              <div className="flex justify-center pt-2">
+              <div className="flex shrink-0 justify-center pt-1">
                 <DownloadButton />
               </div>
             )}
@@ -78,12 +97,15 @@ export function App() {
         </main>
 
         {/* Footer */}
-        <footer className="mt-8 text-center">
-          <p className="text-xs text-[#444444]">
+        <footer className="mt-3 shrink-0 text-center">
+          <p className="text-xs text-[#888888]">
             100% client-side &mdash; your files never leave the browser
           </p>
         </footer>
       </div>
+
+      {/* Slide preview modal — renders as overlay when a slide is selected */}
+      <SlidePreviewModal />
     </div>
   );
 }

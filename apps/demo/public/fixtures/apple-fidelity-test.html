@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SlideForge Apple Fidelity Test</title>
+    <style>
+      :root {
+        --bg: #eef1f6;
+        --text: #1d1d1f;
+        --muted: #6e6e73;
+        --panel: rgba(255, 255, 255, 0.74);
+        --panel-border: rgba(255, 255, 255, 0.72);
+        --blue: #0071e3;
+        --blue-soft: #5ac8fa;
+        --indigo: #5e5ce6;
+        --mint: #30d158;
+        --orange: #ff9f0a;
+        --pink: #ff375f;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: radial-gradient(circle at 0% 0%, #f8fbff 0%, var(--bg) 45%, #e8edf5 100%);
+        color: var(--text);
+        font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      }
+
+      body {
+        padding: 40px 0 72px;
+        display: grid;
+        gap: 48px;
+      }
+
+      .slide {
+        width: 1600px;
+        height: 900px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+        border-radius: 42px;
+        padding: 36px 46px 42px;
+        background: linear-gradient(140deg, rgba(255, 255, 255, 0.96) 0%, rgba(249, 251, 255, 0.88) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.85);
+        box-shadow:
+          0 38px 70px rgba(15, 25, 44, 0.2),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      }
+
+      .slide::after {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.54);
+        border-radius: 34px;
+        pointer-events: none;
+      }
+
+      .mesh {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.42;
+        filter: blur(24px);
+        z-index: 0;
+      }
+
+      .mesh-a {
+        width: 340px;
+        height: 340px;
+        top: -130px;
+        right: 210px;
+        background: radial-gradient(circle, #8ed0ff 0%, rgba(142, 208, 255, 0) 72%);
+      }
+
+      .mesh-b {
+        width: 390px;
+        height: 390px;
+        left: -150px;
+        bottom: -160px;
+        background: radial-gradient(circle, #c8d6ff 0%, rgba(200, 214, 255, 0) 68%);
+      }
+
+      .mesh-c {
+        width: 220px;
+        height: 220px;
+        right: -55px;
+        bottom: 100px;
+        background: radial-gradient(circle, #ffd4dd 0%, rgba(255, 212, 221, 0) 75%);
+      }
+
+      .glass {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(12px) saturate(1.2);
+        box-shadow:
+          0 16px 38px rgba(40, 52, 80, 0.13),
+          inset 0 1px 0 rgba(255, 255, 255, 0.75);
+      }
+
+      .topbar {
+        position: relative;
+        z-index: 2;
+        border-radius: 24px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      .brand-mark {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: linear-gradient(140deg, var(--blue) 0%, var(--indigo) 100%);
+        box-shadow: 0 7px 18px rgba(72, 91, 255, 0.35);
+      }
+
+      .top-nav {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 15px;
+        color: var(--muted);
+      }
+
+      .pill {
+        border: 1px solid rgba(0, 113, 227, 0.22);
+        background: rgba(0, 113, 227, 0.08);
+        border-radius: 999px;
+        color: var(--blue);
+        padding: 7px 12px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .hero {
+        position: relative;
+        z-index: 2;
+        margin-top: 36px;
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 28px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(10, 132, 255, 0.12);
+        color: #0059c7;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--mint);
+      }
+
+      h1 {
+        margin: 18px 0 10px;
+        font-size: 68px;
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+      }
+
+      h1 .gradient-text {
+        background: linear-gradient(120deg, #1d1d1f 0%, #2f66e8 52%, #72a3ff 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .subhead {
+        margin: 0 0 26px;
+        color: var(--muted);
+        font-size: 22px;
+        line-height: 1.38;
+        max-width: 740px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 14px;
+      }
+
+      .btn {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .btn-primary {
+        color: #fff;
+        background: linear-gradient(135deg, #0b84ff 0%, #0066cc 100%);
+        box-shadow: 0 14px 24px rgba(0, 102, 204, 0.3);
+      }
+
+      .btn-secondary {
+        color: #1d1d1f;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(56, 66, 89, 0.15);
+      }
+
+      .stat-wrap {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .stat-card {
+        border-radius: 24px;
+        padding: 18px 18px 16px;
+      }
+
+      .stat-title {
+        margin: 0;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #6b7280;
+      }
+
+      .stat-value {
+        margin: 8px 0 0;
+        font-size: 40px;
+        line-height: 1;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      .stat-note {
+        margin: 10px 0 0;
+        font-size: 14px;
+        color: #5c6375;
+      }
+
+      .slide-title {
+        position: relative;
+        z-index: 2;
+        margin: 6px 0 18px;
+        font-size: 44px;
+        letter-spacing: -0.03em;
+      }
+
+      .slide-kicker {
+        position: relative;
+        z-index: 2;
+        margin: 0 0 18px;
+        color: #4f5766;
+        font-size: 18px;
+      }
+
+      .panel {
+        border-radius: 24px;
+        padding: 18px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .two-col {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      .content-card h3,
+      .content-card h4 {
+        margin: 0 0 10px;
+        letter-spacing: -0.02em;
+      }
+
+      .content-card p {
+        margin: 0 0 12px;
+        color: #3f4552;
+      }
+
+      .content-card a {
+        color: #005ecb;
+        text-decoration: underline;
+      }
+
+      .content-card mark {
+        background: #fff0b8;
+        padding: 2px 6px;
+        border-radius: 8px;
+      }
+
+      .content-card ul,
+      .content-card ol {
+        margin: 10px 0 0 22px;
+        padding: 0;
+        color: #2f3440;
+      }
+
+      .content-card li {
+        margin: 4px 0;
+      }
+
+      blockquote {
+        margin: 14px 0;
+        padding: 12px 16px;
+        border-left: 4px solid #6fa7ff;
+        background: rgba(111, 167, 255, 0.12);
+        border-radius: 10px;
+        color: #1f3554;
+      }
+
+      pre {
+        margin: 0;
+        padding: 14px;
+        border-radius: 12px;
+        background: #10131a;
+        color: #d9e2ff;
+        font-size: 13px;
+        line-height: 1.4;
+        overflow: hidden;
+        font-family: "Fira Code", Menlo, Consolas, monospace;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        border-bottom: 1px solid rgba(83, 92, 112, 0.24);
+        padding: 9px 10px;
+      }
+
+      th {
+        color: #2b303c;
+        background: rgba(210, 220, 240, 0.42);
+      }
+
+      tr:nth-child(even) td {
+        background: rgba(255, 255, 255, 0.45);
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 8px 12px;
+        border: 1px solid rgba(59, 84, 130, 0.2);
+        background: rgba(255, 255, 255, 0.8);
+        font-size: 13px;
+      }
+
+      .chip::before {
+        content: "";
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: linear-gradient(120deg, var(--blue) 0%, #89b4ff 100%);
+      }
+
+      .form-layout {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 18px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      .field label {
+        font-size: 13px;
+        color: #4c5362;
+        font-weight: 600;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid rgba(82, 94, 121, 0.26);
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 12px;
+        padding: 10px 11px;
+        font-size: 14px;
+        color: #1f2430;
+      }
+
+      textarea {
+        min-height: 80px;
+        resize: none;
+      }
+
+      .stack {
+        display: grid;
+        gap: 10px;
+      }
+
+      .inline-options {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        font-size: 14px;
+        color: #343c4e;
+      }
+
+      .switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .switch input {
+        display: none;
+      }
+
+      .toggle {
+        width: 52px;
+        height: 30px;
+        border-radius: 999px;
+        position: relative;
+        background: rgba(108, 117, 133, 0.35);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.9);
+      }
+
+      .toggle::after {
+        content: "";
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 3px 8px rgba(35, 38, 45, 0.22);
+      }
+
+      .switch input:checked + .toggle {
+        background: rgba(48, 209, 88, 0.62);
+      }
+
+      .switch input:checked + .toggle::after {
+        left: 25px;
+      }
+
+      .meter-panel h3 {
+        margin: 0 0 12px;
+      }
+
+      progress {
+        width: 100%;
+        height: 14px;
+      }
+
+      meter {
+        width: 100%;
+      }
+
+      .legend {
+        margin-top: 12px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .legend-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #3c4251;
+      }
+
+      .legend-bar {
+        width: 130px;
+        height: 8px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #b0c8ff 0%, #2d79f5 100%);
+      }
+
+      .media-layout {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 18px;
+      }
+
+      .visual-stack {
+        display: grid;
+        gap: 18px;
+      }
+
+      .sample-image {
+        width: 100%;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.84);
+        box-shadow: 0 12px 26px rgba(31, 47, 82, 0.2);
+        object-fit: cover;
+      }
+
+      .mini-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        height: 184px;
+        margin-top: 10px;
+      }
+
+      .bar {
+        width: 54px;
+        height: calc(var(--value) * 1%);
+        border-radius: 12px 12px 6px 6px;
+        background: linear-gradient(180deg, #76bbff 0%, #0f79f8 100%);
+        box-shadow: 0 8px 16px rgba(15, 121, 248, 0.28);
+      }
+
+      .bar.alt {
+        background: linear-gradient(180deg, #91e8b2 0%, #33c164 100%);
+        box-shadow: 0 8px 16px rgba(43, 164, 90, 0.26);
+      }
+
+      .svg-box {
+        display: grid;
+        place-items: center;
+        min-height: 220px;
+      }
+
+      .layout-grid {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 18px;
+      }
+
+      .dashboard {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .dash-card {
+        border-radius: 18px;
+        padding: 12px;
+        min-height: 120px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .dash-card h4 {
+        margin: 0 0 6px;
+      }
+
+      .dash-card p {
+        margin: 0;
+        color: #434a5c;
+        font-size: 14px;
+        line-height: 1.35;
+      }
+
+      .badge {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(86, 96, 116, 0.2);
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 12px;
+        color: #475065;
+      }
+
+      .card-1 {
+        background: linear-gradient(140deg, rgba(233, 241, 255, 0.95) 0%, rgba(212, 227, 255, 0.85) 100%);
+      }
+
+      .card-2 {
+        background: linear-gradient(140deg, rgba(235, 255, 243, 0.95) 0%, rgba(211, 246, 225, 0.85) 100%);
+        transform: rotate(-1.1deg);
+      }
+
+      .card-3 {
+        background: linear-gradient(140deg, rgba(255, 244, 233, 0.95) 0%, rgba(255, 228, 201, 0.85) 100%);
+      }
+
+      .card-4 {
+        background: linear-gradient(140deg, rgba(244, 238, 255, 0.95) 0%, rgba(226, 213, 255, 0.85) 100%);
+      }
+
+      .card-5 {
+        background: linear-gradient(140deg, rgba(255, 238, 245, 0.95) 0%, rgba(255, 215, 230, 0.85) 100%);
+      }
+
+      .card-6 {
+        background: linear-gradient(140deg, rgba(236, 249, 255, 0.95) 0%, rgba(206, 238, 255, 0.85) 100%);
+      }
+
+      .columns {
+        column-count: 2;
+        column-gap: 14px;
+        font-size: 14px;
+        line-height: 1.55;
+        color: #3a4252;
+      }
+
+      .checklist {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .checklist li {
+        margin: 8px 0;
+        color: #30374a;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .divider {
+        height: 1px;
+        background: linear-gradient(90deg, rgba(90, 101, 126, 0) 0%, rgba(90, 101, 126, 0.35) 50%, rgba(90, 101, 126, 0) 100%);
+        margin: 14px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="slide" data-slide="1">
+      <div class="mesh mesh-a"></div>
+      <div class="mesh mesh-b"></div>
+      <div class="mesh mesh-c"></div>
+
+      <header class="topbar glass">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          SlideForge Reference Deck
+        </div>
+        <nav class="top-nav">
+          <span>Overview</span>
+          <span>Components</span>
+          <span>Reports</span>
+          <span class="pill">Design System</span>
+        </nav>
+      </header>
+
+      <main class="hero">
+        <div>
+          <p class="eyebrow">Fidelity Fixture</p>
+          <h1>
+            Apple-inspired
+            <span class="gradient-text">HTML and CSS</span>
+            reference
+          </h1>
+          <p class="subhead">
+            Use this file as a visual regression baseline after conversion to PowerPoint. This slide covers glass panels,
+            blur, gradients, shadows, pills, buttons, and mixed typography.
+          </p>
+          <div class="actions">
+            <button class="btn btn-primary">Generate Deck</button>
+            <button class="btn btn-secondary">Open Conversion Report</button>
+          </div>
+        </div>
+
+        <div class="stat-wrap">
+          <article class="stat-card glass">
+            <p class="stat-title">Quality score</p>
+            <p class="stat-value">97.4%</p>
+            <p class="stat-note">SSIM target against fixture baseline</p>
+          </article>
+          <article class="stat-card glass">
+            <p class="stat-title">Slides</p>
+            <p class="stat-value">5</p>
+            <p class="stat-note">Mapped from data-slide sections</p>
+          </article>
+          <article class="stat-card glass">
+            <p class="stat-title">Total layers</p>
+            <p class="stat-value">214</p>
+            <p class="stat-note">Text, images, vector, and table nodes</p>
+          </article>
+          <article class="stat-card glass">
+            <p class="stat-title">Speed target</p>
+            <p class="stat-value">&lt; 5s</p>
+            <p class="stat-note">p95 on typical 2000 element document</p>
+          </article>
+        </div>
+      </main>
+    </section>
+
+    <section class="slide" data-slide="2">
+      <div class="mesh mesh-a"></div>
+      <div class="mesh mesh-b"></div>
+      <h2 class="slide-title">Typography, semantics, lists, and table layout</h2>
+      <p class="slide-kicker">Checks heading scales, inline styles, links, quotes, code blocks, bullets, and table borders.</p>
+
+      <div class="two-col">
+        <article class="panel glass content-card">
+          <h3>Headline and paragraph structure</h3>
+          <p>
+            This paragraph includes <strong>strong weight</strong>, <em>italics</em>, <a href="#">link styling</a>, and
+            <mark>highlighted text</mark> for visual comparison in PPTX.
+          </p>
+          <h4>Nested list rendering</h4>
+          <ul>
+            <li>Unordered list item one</li>
+            <li>
+              Unordered list item two
+              <ol>
+                <li>Nested ordered item A</li>
+                <li>Nested ordered item B</li>
+              </ol>
+            </li>
+            <li>Unordered list item three</li>
+          </ul>
+          <div class="chip-row">
+            <span class="chip">Pseudo-element marker</span>
+            <span class="chip">Rounded borders</span>
+            <span class="chip">Inline flex alignment</span>
+          </div>
+        </article>
+
+        <article class="panel glass content-card">
+          <h3>Quote, code, and data table</h3>
+          <blockquote>
+            Good design is obvious. Great design is transparent.
+          </blockquote>
+          <pre>const qualityGate = {
+  ssim: ">= 0.97",
+  driftPx: "<= 2",
+  editableText: "100%"
+};</pre>
+          <table>
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Target</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>First preview</td>
+                <td>&lt;= 1.5s</td>
+                <td>Pass</td>
+              </tr>
+              <tr>
+                <td>Total conversion</td>
+                <td>&lt;= 5.0s</td>
+                <td>Pass</td>
+              </tr>
+              <tr>
+                <td>Peak memory</td>
+                <td>&lt;= 600MB</td>
+                <td>Pass</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="3">
+      <div class="mesh mesh-a"></div>
+      <div class="mesh mesh-c"></div>
+      <h2 class="slide-title">Form controls, states, and progress components</h2>
+      <p class="slide-kicker">Covers input controls, checkboxes, radios, select, textarea, range, progress, and meter.</p>
+
+      <div class="form-layout">
+        <section class="panel glass">
+          <div class="form-grid">
+            <div class="field">
+              <label for="project">Project name</label>
+              <input id="project" type="text" value="Apple Style Reference Deck" />
+            </div>
+            <div class="field">
+              <label for="owner">Owner email</label>
+              <input id="owner" type="email" value="qa@slideforge.app" />
+            </div>
+            <div class="field">
+              <label for="theme">Theme</label>
+              <select id="theme">
+                <option>Balanced fidelity</option>
+                <option>Fast mode</option>
+                <option>Maximum fidelity</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="color">Accent color</label>
+              <input id="color" type="color" value="#0071e3" />
+            </div>
+            <div class="field full">
+              <label for="notes">Conversion notes</label>
+              <textarea id="notes">Use this slide to verify form control rendering consistency after export.</textarea>
+            </div>
+            <div class="field full stack">
+              <div class="inline-options">
+                <label><input type="checkbox" checked /> Include diagnostics</label>
+                <label><input type="checkbox" checked /> Keep editable text</label>
+                <label><input type="radio" name="density" checked /> Standard density</label>
+                <label><input type="radio" name="density" /> Compact density</label>
+              </div>
+              <div class="inline-options">
+                <label class="switch">
+                  <input type="checkbox" checked />
+                  <span class="toggle"></span>
+                  Enable local-only mode
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel glass meter-panel">
+          <h3>Pipeline progress</h3>
+          <label for="p1">Parse</label>
+          <progress id="p1" max="100" value="100"></progress>
+          <label for="p2">Analyze</label>
+          <progress id="p2" max="100" value="92"></progress>
+          <label for="p3">Package</label>
+          <progress id="p3" max="100" value="76"></progress>
+          <div class="divider"></div>
+          <label for="m1">Fidelity confidence</label>
+          <meter id="m1" min="0" max="100" low="60" high="90" optimum="100" value="94">94%</meter>
+          <div class="legend">
+            <div class="legend-row"><span>Typography</span><span>99%</span></div>
+            <div class="legend-bar"></div>
+            <div class="legend-row"><span>Layout</span><span>97%</span></div>
+            <div class="legend-bar"></div>
+            <div class="legend-row"><span>Effects</span><span>90%</span></div>
+            <div class="legend-bar"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="4">
+      <div class="mesh mesh-b"></div>
+      <div class="mesh mesh-c"></div>
+      <h2 class="slide-title">Images, SVG, charts, transforms, and positioning</h2>
+      <p class="slide-kicker">Checks img tags, inline SVG, object-fit, transformed cards, and custom-property bars.</p>
+
+      <div class="media-layout">
+        <div class="visual-stack">
+          <figure class="panel glass" style="margin: 0;">
+            <img
+              class="sample-image"
+              alt="Synthetic image for fidelity test"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='960' height='500' viewBox='0 0 960 500'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23007aff'/%3E%3Cstop offset='100%25' stop-color='%235ac8fa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='960' height='500' fill='url(%23bg)'/%3E%3Ccircle cx='760' cy='120' r='90' fill='rgba(255,255,255,0.32)'/%3E%3Ccircle cx='190' cy='380' r='120' fill='rgba(255,255,255,0.14)'/%3E%3Ctext x='70' y='250' font-size='62' fill='white' font-family='Arial'%3EMedia Reference Asset%3C/text%3E%3C/svg%3E"
+            />
+            <figcaption class="muted" style="margin-top: 10px; font-size: 13px;">
+              Data URI image with gradient and vector overlays.
+            </figcaption>
+          </figure>
+
+          <div class="mini-grid">
+            <article class="panel glass" style="transform: rotate(-1.6deg);">
+              <h4 style="margin: 0 0 8px;">Transform test</h4>
+              <p class="muted" style="margin: 0;">Slight card rotation plus layered shadow.</p>
+            </article>
+            <article class="panel glass" style="transform: translateY(-4px);">
+              <h4 style="margin: 0 0 8px;">Translate test</h4>
+              <p class="muted" style="margin: 0;">Positioning and depth comparison.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="visual-stack">
+          <article class="panel glass">
+            <h3 style="margin: 0;">Bar chart (CSS custom properties)</h3>
+            <div class="chart">
+              <div class="bar" style="--value: 38;"></div>
+              <div class="bar alt" style="--value: 62;"></div>
+              <div class="bar" style="--value: 74;"></div>
+              <div class="bar alt" style="--value: 88;"></div>
+              <div class="bar" style="--value: 54;"></div>
+            </div>
+          </article>
+
+          <article class="panel glass svg-box">
+            <svg width="320" height="170" viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Layered vector icon">
+              <defs>
+                <linearGradient id="ringGradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#78b8ff" />
+                  <stop offset="100%" stop-color="#2c6ef8" />
+                </linearGradient>
+              </defs>
+              <rect x="12" y="16" width="296" height="138" rx="30" fill="rgba(255,255,255,0.62)" stroke="rgba(71,104,170,0.28)" />
+              <circle cx="160" cy="85" r="52" fill="none" stroke="url(#ringGradient)" stroke-width="16" />
+              <circle cx="160" cy="85" r="24" fill="#30d158" opacity="0.82" />
+            </svg>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-slide="5">
+      <div class="mesh mesh-a"></div>
+      <div class="mesh mesh-b"></div>
+      <h2 class="slide-title">Layout stress fixture and feature checklist</h2>
+      <p class="slide-kicker">Combines grid, columns, absolute badges, gradients, borders, and typography scales.</p>
+
+      <div class="layout-grid">
+        <section class="panel glass">
+          <div class="dashboard">
+            <article class="dash-card card-1">
+              <span class="badge">A</span>
+              <h4>Card one</h4>
+              <p>Gradient background with absolute badge and clipped overflow.</p>
+            </article>
+            <article class="dash-card card-2">
+              <span class="badge">B</span>
+              <h4>Card two</h4>
+              <p>Slight transform and shadow to test geometric mapping.</p>
+            </article>
+            <article class="dash-card card-3">
+              <span class="badge">C</span>
+              <h4>Card three</h4>
+              <p>Warm palette, rounded corners, and compact text wrapping.</p>
+            </article>
+            <article class="dash-card card-4">
+              <span class="badge">D</span>
+              <h4>Card four</h4>
+              <p>Layered color surface and typography consistency checks.</p>
+            </article>
+            <article class="dash-card card-5">
+              <span class="badge">E</span>
+              <h4>Card five</h4>
+              <p>Tests spacing, baseline alignment, and border rendering.</p>
+            </article>
+            <article class="dash-card card-6">
+              <span class="badge">F</span>
+              <h4>Card six</h4>
+              <p>Color blend contrast in light-glass environment.</p>
+            </article>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="columns">
+            This two-column text block verifies multi-column layout and line wrapping. Keep an eye on line breaks,
+            paragraph spacing, and left-right balancing after conversion. This section should maintain equal columns
+            without clipping, overlap, or unexpected text resizing.
+          </div>
+        </section>
+
+        <aside class="panel glass">
+          <h3 style="margin-top: 0;">Feature checklist</h3>
+          <ul class="checklist">
+            <li>Flex and grid alignment</li>
+            <li>Absolute and relative positioning</li>
+            <li>Linear and radial gradients</li>
+            <li>Border radius and border styles</li>
+            <li>Box shadows and text shadows</li>
+            <li>Data URI image rendering</li>
+            <li>Inline SVG vector preservation</li>
+            <li>List, table, and form fidelity</li>
+            <li>Pseudo-elements and chips</li>
+            <li>Custom property driven chart bars</li>
+            <li>Multi-slide markers via data-slide</li>
+          </ul>
+          <p class="muted" style="margin-bottom: 0; font-size: 13px;">
+            Expected behavior: each section should become one slide, and text must remain editable in the output PPTX.
+          </p>
+        </aside>
+      </div>
+    </section>
+  </body>
+</html>
