@@ -27,9 +27,9 @@ body {
 }
 
 .bcg-slide {
-  width: 1365px;
-  height: 768px;
-  padding: 42px 66px 46px;
+  width: 1920px;
+  height: 1080px;
+  padding: 59px 93px 65px;
   background: linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
   color: var(--white);
   position: relative;
@@ -38,43 +38,43 @@ body {
 
 .hero h1 {
   margin: 0;
-  font-size: 26px;
+  font-size: 37px;
   line-height: 1.1;
   letter-spacing: -0.08px;
   font-weight: 700;
 }
 
 .subhead {
-  margin: 50px 0 0;
+  margin: 70px 0 0;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 22px;
   color: var(--white);
-  font-size: 21px;
+  font-size: 30px;
   line-height: 1;
   font-weight: 600;
   letter-spacing: -0.05px;
 }
 
 .slashes {
-  width: 60px;
-  height: 20px;
+  width: 84px;
+  height: 28px;
   display: inline-flex;
 }
 
 .slashes svg {
-  width: 60px;
-  height: 20px;
+  width: 84px;
+  height: 28px;
   fill: none;
   stroke: var(--icon);
-  stroke-width: 3.2;
+  stroke-width: 4.5;
   stroke-linecap: square;
 }
 
 .timeline-wrap {
-  margin-top: 30px;
+  margin-top: 42px;
   position: relative;
-  height: 446px;
+  height: 627px;
   display: grid;
   grid-template-rows: repeat(6, 1fr);
 }
@@ -90,16 +90,16 @@ body {
 
 .timeline-row {
   display: grid;
-  grid-template-columns: 114px 492px minmax(0, 1fr);
+  grid-template-columns: 160px 692px minmax(0, 1fr);
   align-items: center;
-  min-height: 72px;
+  min-height: 101px;
 }
 
 .year-col {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 20px;
+  gap: 14px;
+  font-size: 28px;
   line-height: 1;
   color: var(--white);
   font-weight: 700;
@@ -107,11 +107,11 @@ body {
 }
 
 .rail-node {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   border-radius: 2px;
   background: #afbce4;
-  margin-left: -3px;
+  margin-left: -4px;
 }
 
 .chevron {
@@ -129,15 +129,15 @@ body {
 .topic-col {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   border-left: 2px solid #244d8c;
-  padding-left: 10px;
-  min-height: 44px;
+  padding-left: 14px;
+  min-height: 62px;
 }
 
 .topic-col h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 25px;
   line-height: 1.1;
   font-weight: 600;
   letter-spacing: -0.03px;
@@ -147,27 +147,27 @@ body {
 
 .topic-icon {
   display: inline-flex;
-  width: 26px;
-  height: 26px;
-  flex: 0 0 26px;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
 }
 
 .topic-icon svg {
-  width: 26px;
-  height: 26px;
+  width: 36px;
+  height: 36px;
   fill: none;
   stroke: var(--icon);
-  stroke-width: 2;
+  stroke-width: 2.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .desc-col {
   border-left: 2px solid #244d8c;
-  margin-left: 34px;
-  padding-left: 20px;
+  margin-left: 48px;
+  padding-left: 28px;
   color: var(--desc);
-  font-size: 15px;
+  font-size: 21px;
   line-height: 1.24;
   font-weight: 500;
   letter-spacing: -0.01px;
@@ -175,16 +175,16 @@ body {
 
 .slide-footer {
   position: absolute;
-  left: 66px;
-  right: 66px;
-  bottom: 18px;
+  left: 93px;
+  right: 93px;
+  bottom: 25px;
   display: grid;
   grid-template-columns: 1fr 1fr auto;
   align-items: center;
-  border-top: 2px solid #3f659f;
-  padding-top: 10px;
+  border-top: 3px solid #3f659f;
+  padding-top: 14px;
   color: #b8c4d8;
-  font-size: 13px;
+  font-size: 18px;
   line-height: 1;
   letter-spacing: 0;
 }
@@ -195,7 +195,7 @@ body {
 
 .pipe {
   color: #b1bfd8;
-  margin: 0 8px;
+  margin: 0 11px;
 }
 
 .middle-foot {
