@@ -1,0 +1,24 @@
+{
+  "name": "@slideforge/core",
+  "version": "0.1.0",
+  "description": "HTML to PPTX conversion engine — client-side",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "css-tree": "^3.1.0",
+    "jszip": "^3.10.1",
+    "opentype.js": "^1.3.4"
+  }
+}
