@@ -1,0 +1,262 @@
+:root {
+  --left-bg: #b40646;
+  --left-bg-dark: #aa0041;
+  --slide-bg: #e8e8ea;
+  --middle-row-alt: #dddddf;
+  --middle-row-main: #e4e4e6;
+  --right-bg: #f1f1f3;
+  --navy: #17375d;
+  --teal: #13b89e;
+  --icon-bg: #b10647;
+  --white: #ffffff;
+  --gold: #f2b11a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  font-family: Arial, "Segoe UI", sans-serif;
+  background: #d8d8db;
+}
+
+body {
+  display: grid;
+  place-items: center;
+}
+
+.kearney-slide {
+  width: 1285px;
+  height: 718px;
+  display: grid;
+  grid-template-columns: 317px 648px 320px;
+  background: var(--slide-bg);
+  overflow: hidden;
+}
+
+.left-panel {
+  background: linear-gradient(180deg, var(--left-bg) 0%, var(--left-bg-dark) 100%);
+  padding: 34px 28px 26px 34px;
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+}
+
+.left-panel h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.08;
+  letter-spacing: -0.1px;
+  font-weight: 700;
+}
+
+.left-footer {
+  margin-top: auto;
+}
+
+.left-kicker {
+  margin: 0;
+  color: #f8a91d;
+  font-size: 15px;
+  line-height: 1.12;
+  letter-spacing: -0.04px;
+}
+
+.left-title {
+  margin: 4px 0 0;
+  color: var(--white);
+  font-size: 16px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.left-marks {
+  margin-top: 12px;
+  display: flex;
+  gap: 9px;
+}
+
+.mark {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.mark svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: currentColor;
+  stroke-width: 1.5;
+}
+
+.mark-gold {
+  background: #f6ad19;
+  color: #fef4d6;
+}
+
+.mark-light {
+  background: #efeff2;
+  color: #d6d6dc;
+}
+
+.middle-panel {
+  padding: 28px 0 0;
+  background: var(--slide-bg);
+  color: var(--navy);
+  border-left: 1px solid #cfcfd2;
+  border-right: 1px solid #d7d7da;
+}
+
+.middle-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  padding: 0 40px 12px;
+}
+
+.head-cell h2 {
+  margin: 0;
+  color: #143258;
+  font-size: 26px;
+  line-height: 1.02;
+  letter-spacing: -0.08px;
+  font-weight: 700;
+}
+
+.head-cell p {
+  margin: 2px 0 0;
+  color: var(--teal);
+  font-size: 20px;
+  line-height: 1.02;
+  letter-spacing: -0.05px;
+  font-weight: 700;
+}
+
+.middle-rows {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  height: 594px;
+}
+
+.middle-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 156px minmax(0, 1fr);
+  gap: 6px;
+  padding: 15px 34px 11px 38px;
+  background: var(--middle-row-main);
+}
+
+.middle-row.alt {
+  background: var(--middle-row-alt);
+}
+
+.middle-row ul {
+  margin: 0;
+  padding: 0 0 0 18px;
+  list-style: disc;
+}
+
+.middle-row li {
+  color: #1c3a5f;
+  font-size: 15px;
+  line-height: 1.34;
+  letter-spacing: 0;
+  margin: 0 0 7px;
+}
+
+.middle-row li:last-child {
+  margin-bottom: 0;
+}
+
+.row-icon {
+  align-self: center;
+  justify-self: center;
+  width: 136px;
+  display: grid;
+  place-items: center;
+}
+
+.icon-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--icon-bg);
+  display: grid;
+  place-items: center;
+}
+
+.icon-circle svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-circle svg circle:first-child {
+  fill: none;
+}
+
+.row-icon p {
+  margin: 8px 0 0;
+  color: #1c3f61;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.04px;
+  position: relative;
+}
+
+.row-icon p::before,
+.row-icon p::after {
+  content: "";
+  position: absolute;
+  top: 52%;
+  width: 44px;
+  height: 2px;
+  background: #5fd0bf;
+}
+
+.row-icon p::before {
+  right: calc(100% + 7px);
+}
+
+.row-icon p::after {
+  left: calc(100% + 7px);
+}
+
+.right-panel {
+  background: var(--right-bg);
+  padding: 33px 24px 28px 22px;
+  color: var(--navy);
+  display: flex;
+  flex-direction: column;
+}
+
+.right-panel p {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.17;
+  letter-spacing: -0.1px;
+  font-weight: 500;
+}
+
+.right-panel .page-note {
+  margin-top: auto;
+  margin-bottom: 0;
+  text-align: right;
+  font-size: 13px;
+  color: #1e1f25;
+  letter-spacing: 0;
+}
