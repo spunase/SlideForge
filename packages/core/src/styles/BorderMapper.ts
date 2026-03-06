@@ -70,6 +70,7 @@ export function mapBorder(
  * Checks shorthand and side-specific properties.
  */
 function parseBorderWidth(computed: Record<string, string>): number {
+  // Check longhand properties first, then side-specific
   const raw =
     computed['border-width'] ??
     computed['border-top-width'] ??
@@ -78,7 +79,24 @@ function parseBorderWidth(computed: Record<string, string>): number {
     computed['border-bottom-width'] ??
     '';
 
-  return parsePxValue(raw, 0);
+  if (raw) return parsePxValue(raw, 0);
+
+  // Also check for side-specific shorthand that wasn't fully expanded
+  for (const side of ['border-left', 'border-right', 'border-top', 'border-bottom', 'border']) {
+    const shorthand = computed[side];
+    if (shorthand) {
+      const parts = shorthand.trim().split(/\s+/);
+      for (const part of parts) {
+        const match = part.match(/^(\d+(?:\.\d+)?)(px|pt)?$/);
+        if (match) return parseFloat(match[1] ?? '0');
+        if (part === 'thin') return 1;
+        if (part === 'medium') return 3;
+        if (part === 'thick') return 5;
+      }
+    }
+  }
+
+  return 0;
 }
 
 /**
@@ -87,13 +105,31 @@ function parseBorderWidth(computed: Record<string, string>): number {
 function parseBorderStyle(
   computed: Record<string, string>
 ): 'solid' | 'dashed' | 'dotted' | 'none' {
-  const raw =
+  let raw =
     computed['border-style'] ??
     computed['border-top-style'] ??
     computed['border-left-style'] ??
     computed['border-right-style'] ??
     computed['border-bottom-style'] ??
     '';
+
+  // Check side-specific shorthands if longhand not found
+  if (!raw) {
+    const borderStyles = new Set(['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset', 'none', 'hidden']);
+    for (const side of ['border-left', 'border-right', 'border-top', 'border-bottom', 'border']) {
+      const shorthand = computed[side];
+      if (shorthand) {
+        for (const part of shorthand.trim().split(/\s+/)) {
+          if (borderStyles.has(part.toLowerCase())) {
+            raw = part;
+            break;
+          }
+        }
+        if (raw) break;
+      }
+    }
+  }
+
   const trimmed = raw.trim().toLowerCase();
 
   switch (trimmed) {

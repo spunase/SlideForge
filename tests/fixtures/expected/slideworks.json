@@ -1,0 +1,24 @@
+{
+  "slideCount": 216,
+  "description": "SlideWorks — 216-Slide Consulting Deck Stress Test. Corporate consulting deck with bar charts, tables, KPIs, timelines, risk matrices, org charts, process flows, section dividers, image placeholders, waterfall charts, comparison matrices, and mixed layouts.",
+  "slideTypes": {
+    "covers": 6,
+    "sectionDividers": 16,
+    "bulletText": 30,
+    "barCharts": 30,
+    "horizontalBars": 15,
+    "tables": 30,
+    "processFlows": 12,
+    "ganttTimelines": 12,
+    "kpiDashboards": 15,
+    "imagePlaceholders": 10,
+    "riskMatrices": 8,
+    "orgCharts": 6,
+    "waterfallCharts": 6,
+    "comparisonMatrices": 10,
+    "mixedLayouts": 10
+  },
+  "expectedWarnings": {
+    "maxSeverity": "medium"
+  }
+}

@@ -29,11 +29,22 @@ function hasVisualContainerStyles(computedStyles: Record<string, string>): boole
   const hasBackgroundImage =
     backgroundImage.length > 0 && backgroundImage !== 'none';
 
-  const borderWidth = computedStyles['border-width'] ?? computedStyles['border-top-width'] ?? '';
-  const borderStyle = computedStyles['border-style'] ?? computedStyles['border-top-style'] ?? '';
+  const borderWidth = computedStyles['border-width']
+    ?? computedStyles['border-top-width']
+    ?? computedStyles['border-left-width']
+    ?? computedStyles['border-right-width']
+    ?? computedStyles['border-bottom-width']
+    ?? '';
+  const borderStyle = computedStyles['border-style']
+    ?? computedStyles['border-top-style']
+    ?? computedStyles['border-left-style']
+    ?? computedStyles['border-right-style']
+    ?? computedStyles['border-bottom-style']
+    ?? '';
   const hasBorder =
     borderWidth !== '0px' &&
     borderWidth !== '0' &&
+    borderWidth.length > 0 &&
     borderStyle !== 'none' &&
     borderStyle.length > 0;
 

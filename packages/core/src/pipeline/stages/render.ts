@@ -258,6 +258,58 @@ function resolveVarReferences(value: string, customProperties: Map<string, strin
   });
 }
 
+// CSS properties that are inherited by default in the cascade
+const INHERITED_PROPERTIES = new Set([
+  'color', 'font-family', 'font-size', 'font-weight', 'font-style',
+  'text-align', 'text-decoration', 'text-decoration-line', 'text-transform',
+  'line-height', 'letter-spacing', 'text-shadow', 'opacity',
+]);
+
+// Expand CSS border shorthands into longhand properties
+function expandBorderShorthands(props: Map<string, string>): void {
+  // border: <width> <style> <color>
+  const border = props.get('border');
+  if (border) {
+    const parts = parseBorderShorthand(border);
+    if (parts.width && !props.has('border-width')) props.set('border-width', parts.width);
+    if (parts.style && !props.has('border-style')) props.set('border-style', parts.style);
+    if (parts.color && !props.has('border-color')) props.set('border-color', parts.color);
+    props.delete('border');
+  }
+
+  // border-left / border-right / border-top / border-bottom
+  for (const side of ['left', 'right', 'top', 'bottom']) {
+    const shorthand = props.get(`border-${side}`);
+    if (shorthand) {
+      const parts = parseBorderShorthand(shorthand);
+      if (parts.width && !props.has(`border-${side}-width`)) props.set(`border-${side}-width`, parts.width);
+      if (parts.style && !props.has(`border-${side}-style`)) props.set(`border-${side}-style`, parts.style);
+      if (parts.color && !props.has(`border-${side}-color`)) props.set(`border-${side}-color`, parts.color);
+      props.delete(`border-${side}`);
+    }
+  }
+}
+
+function parseBorderShorthand(value: string): { width?: string; style?: string; color?: string } {
+  const borderStyles = new Set(['none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset', 'hidden']);
+  const parts = value.trim().split(/\s+/);
+  let width: string | undefined;
+  let style: string | undefined;
+  let color: string | undefined;
+
+  for (const part of parts) {
+    if (borderStyles.has(part)) {
+      style = part;
+    } else if (/^(\d+(?:\.\d+)?)(px|em|rem|pt)?$/.test(part) || part === '0' || part === 'thin' || part === 'medium' || part === 'thick') {
+      width = part;
+    } else {
+      color = part;
+    }
+  }
+
+  return { width, style, color };
+}
+
 function applyStylesToInline(doc: Document): void {
   // Collect all <style> block text
   const styleElements = doc.querySelectorAll('style');
@@ -269,9 +321,25 @@ function applyStylesToInline(doc: Document): void {
 
   const { rules, customProperties } = parseCssRules(allCss);
 
+  // Collect inherited properties from body/html rules
+  const inheritedDefaults = new Map<string, string>();
+  for (const rule of rules) {
+    if (rule.selector === 'body' || rule.selector === 'html') {
+      for (const [prop, rawVal] of rule.properties) {
+        if (INHERITED_PROPERTIES.has(prop)) {
+          const resolved = resolveVarReferences(rawVal, customProperties);
+          if (resolved && resolved.length > 0) {
+            inheritedDefaults.set(prop, resolved);
+          }
+        }
+      }
+    }
+  }
+
   // Walk all elements and apply matching rules
-  const allElements = doc.body?.querySelectorAll('*');
-  if (!allElements) return;
+  const bodyEl = doc.body;
+  if (!bodyEl) return;
+  const allElements = bodyEl.querySelectorAll('*');
 
   for (const element of allElements) {
     const matched = new Map<string, string>();
@@ -288,35 +356,62 @@ function applyStylesToInline(doc: Document): void {
       }
     }
 
-    if (matched.size === 0) continue;
+    // Apply inherited defaults for properties not explicitly matched
+    for (const [prop, val] of inheritedDefaults) {
+      if (!matched.has(prop)) {
+        matched.set(prop, val);
+      }
+    }
 
-    // Resolve var() references and merge with existing inline styles
+    // Parse existing inline styles, resolve any var() references in them
     const existing = element.getAttribute('style') ?? '';
-    const newDeclarations: string[] = [];
-
-    // Parse existing inline styles to avoid overwriting them
     const existingProps = new Set<string>();
+    const resolvedExisting: string[] = [];
+    let inlineHadVars = false;
+
     for (const decl of existing.split(';')) {
       const colonIdx = decl.indexOf(':');
       if (colonIdx > 0) {
-        existingProps.add(decl.slice(0, colonIdx).trim().toLowerCase());
+        const prop = decl.slice(0, colonIdx).trim().toLowerCase();
+        let val = decl.slice(colonIdx + 1).trim();
+        existingProps.add(prop);
+        // Resolve var() references in existing inline styles
+        if (val.includes('var(') && customProperties.size > 0) {
+          val = resolveVarReferences(val, customProperties);
+          inlineHadVars = true;
+        }
+        if (prop && val) {
+          resolvedExisting.push(`${prop}: ${val}`);
+        }
       }
     }
 
+    if (matched.size === 0 && !inlineHadVars) continue;
+
+    // Resolve var() references in matched CSS rules
+    const resolvedMatched = new Map<string, string>();
     for (const [prop, rawVal] of matched) {
-      // Don't overwrite existing inline styles (they have higher specificity)
-      if (existingProps.has(prop)) continue;
       const resolved = resolveVarReferences(rawVal, customProperties);
       if (resolved && resolved.length > 0) {
-        newDeclarations.push(`${prop}: ${resolved}`);
+        resolvedMatched.set(prop, resolved);
       }
     }
 
-    if (newDeclarations.length > 0) {
-      const merged = existing
-        ? `${existing}; ${newDeclarations.join('; ')}`
-        : newDeclarations.join('; ');
-      element.setAttribute('style', merged);
+    // Expand border shorthands into longhand properties
+    expandBorderShorthands(resolvedMatched);
+
+    // Merge: existing inline styles take priority over CSS rules
+    const newDeclarations: string[] = [];
+
+    for (const [prop, resolved] of resolvedMatched) {
+      // Don't overwrite existing inline styles (they have higher specificity)
+      if (existingProps.has(prop)) continue;
+      newDeclarations.push(`${prop}: ${resolved}`);
+    }
+
+    if (newDeclarations.length > 0 || inlineHadVars) {
+      const allDeclarations = [...resolvedExisting, ...newDeclarations];
+      element.setAttribute('style', allDeclarations.join('; '));
     }
   }
 }

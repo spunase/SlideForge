@@ -22,6 +22,11 @@ const TRACKED_STYLE_PROPERTIES = [
   'background',
   'background-color',
   'background-image',
+  'border',
+  'border-left',
+  'border-right',
+  'border-top',
+  'border-bottom',
   'border-width',
   'border-top-width',
   'border-left-width',
@@ -241,12 +246,23 @@ function parseStyleProp(style: string, property: string): string | undefined {
   return m?.[1]?.trim();
 }
 
+// HTML elements that use horizontal (row) layout by default via UA styles
+const TABLE_ROW_TAGS = new Set(['tr', 'thead', 'tbody', 'tfoot']);
+
 /**
- * Determine the layout direction for an element based on its inline styles.
- * Returns 'row' for horizontal flex/grid, 'column' for vertical stacking.
+ * Determine the layout direction for an element based on its inline styles
+ * and tag name (for table elements whose display comes from UA defaults).
+ * Returns 'row' for horizontal flex/grid/table-row, 'column' for vertical stacking.
  */
-function getLayoutDirection(style: string): 'row' | 'column' {
+function getLayoutDirection(style: string, tagName?: string): 'row' | 'column' {
+  // Table rows distribute cells horizontally regardless of inline style
+  if (tagName && TABLE_ROW_TAGS.has(tagName)) return 'row';
+
   const display = parseStyleProp(style, 'display');
+
+  if (display === 'table-row') return 'row';
+  if (display === 'table' || display === 'inline-table') return 'column'; // rows stack vertically
+
   if (!display) return 'column';
 
   if (display === 'flex' || display === 'inline-flex') {
@@ -297,10 +313,11 @@ function computeChildSlots(
   parentWidth: number,
   childCount: number,
   style: string,
+  tagName?: string,
 ): LayoutSlot[] {
   if (childCount === 0) return [];
 
-  const direction = getLayoutDirection(style);
+  const direction = getLayoutDirection(style, tagName);
   const gap = parsePxValue(style, 'gap') ?? 0;
   const padding = parsePxValue(style, 'padding') ?? 0;
   const contentWidth = parentWidth - padding * 2;
@@ -455,6 +472,7 @@ function walkElementFallback(
     geometry.width,
     childCount,
     style,
+    tagName,
   );
 
   let childY = geometry.y;
@@ -481,7 +499,7 @@ function walkElementFallback(
     children.push(extractedChild);
 
     // Only advance Y for column layouts
-    const direction = getLayoutDirection(style);
+    const direction = getLayoutDirection(style, tagName);
     if (direction === 'column') {
       childY = extractedChild.geometry.y + extractedChild.geometry.height;
     } else {
