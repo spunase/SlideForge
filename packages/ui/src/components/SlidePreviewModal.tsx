@@ -240,6 +240,7 @@ export function SlidePreviewModal() {
                 slideHeight={slideSize.height}
                 width={fittedSize.width}
                 height={fittedSize.height}
+                slideIndex={selectedSlideIndex}
               />
             ) : (
               <SlidePreviewRenderer

@@ -9,6 +9,7 @@ interface ComparisonSliderProps {
   slideHeight: number;
   width: number;
   height: number;
+  slideIndex?: number;
 }
 
 export function ComparisonSlider({
@@ -18,6 +19,7 @@ export function ComparisonSlider({
   slideHeight,
   width,
   height,
+  slideIndex = 0,
 }: ComparisonSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(50);
@@ -67,7 +69,7 @@ export function ComparisonSlider({
     }
   }, []);
 
-  const iframeSrcDoc = buildSandboxedHtml(sourceHtml, slideWidth, slideHeight);
+  const iframeSrcDoc = buildSandboxedHtml(sourceHtml, slideWidth, slideHeight, slideIndex);
   const iframeScale = Math.min(width / slideWidth, height / slideHeight);
   const iframeX = Math.max(0, (width - slideWidth * iframeScale) / 2);
   const iframeY = Math.max(0, (height - slideHeight * iframeScale) / 2);
@@ -168,8 +170,40 @@ function buildSandboxedHtml(
   html: string,
   slideWidth: number,
   slideHeight: number,
+  slideIndex: number = 0,
 ): string {
   const sanitized = html.replace(/<script[\s\S]*?<\/script>/gi, '');
+
+  // CSS that hides all slide markers except the Nth one and makes it fill the viewport.
+  // Matches the same priority order as SlideSegmenter: [data-slide], .slide, section.
+  const slideIsolationStyle = `
+      <style data-comparison-slide-isolate>
+        /* Hide all slide markers by default, show only the Nth */
+        [data-slide] { display: none !important; }
+        [data-slide]:nth-of-type(${slideIndex + 1}) {
+          display: block !important;
+          width: ${slideWidth}px;
+          height: ${slideHeight}px;
+          overflow: hidden;
+        }
+        /* Only apply .slide isolation when no [data-slide] present */
+        body:not(:has([data-slide])) .slide { display: none !important; }
+        body:not(:has([data-slide])) .slide:nth-of-type(${slideIndex + 1}) {
+          display: block !important;
+          width: ${slideWidth}px;
+          height: ${slideHeight}px;
+          overflow: hidden;
+        }
+        /* Only apply section isolation when no [data-slide] or .slide present */
+        body:not(:has([data-slide])):not(:has(.slide)) > section { display: none !important; }
+        body:not(:has([data-slide])):not(:has(.slide)) > section:nth-of-type(${slideIndex + 1}) {
+          display: block !important;
+          width: ${slideWidth}px;
+          height: ${slideHeight}px;
+          overflow: hidden;
+        }
+      </style>
+    `;
 
   const fitStyle = `
       <style data-comparison-fit>
@@ -182,6 +216,7 @@ function buildSandboxedHtml(
           background: #ffffff;
         }
       </style>
+      ${slideIsolationStyle}
     `;
 
   if (

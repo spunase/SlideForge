@@ -14,11 +14,12 @@ export function PreviewGrid() {
 
   if (slides.length === 0 && isProcessing) {
     return (
+      <div className="h-full overflow-y-auto pr-1">
       <div
         role="status"
         aria-live="polite"
         aria-label="Generating slide previews"
-        className="grid h-full grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3"
+        className="grid grid-cols-2 gap-3 pb-2 sm:grid-cols-3"
       >
         {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
           <div
@@ -27,6 +28,7 @@ export function PreviewGrid() {
             aria-hidden="true"
           />
         ))}
+      </div>
       </div>
     );
   }
@@ -57,10 +59,11 @@ export function PreviewGrid() {
   }
 
   return (
+    <div className="h-full overflow-y-auto pr-1">
     <div
       role="list"
       aria-label="Slide previews"
-      className="grid h-full grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3"
+      className="grid grid-cols-2 gap-3 pb-2 sm:grid-cols-3"
     >
       {slides.map((slide) => {
         const shapes = mappedSlides[slide.index];
@@ -141,6 +144,7 @@ export function PreviewGrid() {
           </div>
         );
       })}
+    </div>
     </div>
   );
 }
